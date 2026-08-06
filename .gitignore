@@ -1,0 +1,5 @@
+# Reference clones of OpenEarable's own repos — not ours to host, clone
+# yourself (see README's "Getting the code" section).
+firmware/open-earable-2/
+mobile_app/open_earable_flutter/
+mobile_app/open_earable_app/

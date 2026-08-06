@@ -1,0 +1,15 @@
+[submodule "mobile_app/haven_custom_app"]
+	path = mobile_app/haven_custom_app
+	url = https://github.com/pauliano22/haven-app.git
+[submodule "firmware/haven_zephyr_app"]
+	path = firmware/haven_zephyr_app
+	url = https://github.com/pauliano22/haven-zephyr-app.git
+[submodule "hardware"]
+	path = hardware
+	url = https://github.com/pauliano22/haven-hardware.git
+[submodule "legacy_prototypes/teensy_hearing_shield"]
+	path = legacy_prototypes/teensy_hearing_shield
+	url = https://github.com/pauliano22/haven-legacy-teensy.git
+[submodule "legacy_prototypes/tinnitus_dsp"]
+	path = legacy_prototypes/tinnitus_dsp
+	url = https://github.com/pauliano22/haven-legacy-dsp-sandbox.git
