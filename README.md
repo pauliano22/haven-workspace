@@ -9,7 +9,12 @@ to diff against.
 
 Assembled 2026-08-06 from four sources: OpenEarable hardware exports out of
 Downloads, three cloned OpenEarable reference repos, and Haven's own local
-repos (moved here with git history intact).
+repos (moved here with git history intact). Same day: seven logo concepts
+designed and reviewed, the app icon (Concept D) shipped, and the marketing
+site (Concept G) built and pushed — see `website/README.md`. The site's
+GitHub Pages deploy is currently blocked by a GitHub-wide Actions/Pages
+outage, not anything in this repo; it'll go live on its own once GitHub
+recovers.
 
 ## Getting the code
 
