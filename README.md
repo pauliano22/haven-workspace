@@ -11,6 +11,37 @@ Assembled 2026-08-06 from four sources: OpenEarable hardware exports out of
 Downloads, three cloned OpenEarable reference repos, and Haven's own local
 repos (moved here with git history intact).
 
+## Getting the code
+
+This repo is an **umbrella** — it's mostly git submodules pointing at Haven's
+real repos, plus documentation tying them together. Clone with submodules in
+one shot:
+
+```sh
+git clone --recurse-submodules https://github.com/pauliano22/haven-workspace.git
+```
+
+| Path | Repo | Visibility |
+| --- | --- | --- |
+| `mobile_app/haven_custom_app` | [haven-app](https://github.com/pauliano22/haven-app) | public |
+| `firmware/haven_zephyr_app` | [haven-zephyr-app](https://github.com/pauliano22/haven-zephyr-app) | public |
+| `hardware/` | [haven-hardware](https://github.com/pauliano22/haven-hardware) | public, **Git LFS** |
+| `legacy_prototypes/teensy_hearing_shield` | [haven-legacy-teensy](https://github.com/pauliano22/haven-legacy-teensy) | public |
+| `legacy_prototypes/tinnitus_dsp` | [haven-legacy-dsp-sandbox](https://github.com/pauliano22/haven-legacy-dsp-sandbox) | public |
+
+`hardware/` uses Git LFS — run `git lfs install` once per machine before
+cloning, or `git lfs pull` afterward if you cloned before installing it.
+
+The three OpenEarable reference repos are **not submoduled** — they're
+someone else's project, not pinned dependencies of ours. Clone them yourself
+if you need them:
+
+```sh
+git clone https://github.com/OpenEarable/open-earable-2.git firmware/open-earable-2
+git clone https://github.com/OpenEarable/open_earable_flutter.git mobile_app/open_earable_flutter
+git clone https://github.com/OpenEarable/app.git mobile_app/open_earable_app
+```
+
 ## Layout
 
 ```
@@ -57,8 +88,7 @@ haven_workspace/
     │                             DSP math is ported from. Superseded, not extended.
     └── tinnitus_dsp/              Desktop C++ DSP sandbox (RtAudio real-time notch,
                                   offline test runners, numpy-verified filter math).
-                                  Contains its own nested git repo at rtaudio/ (a
-                                  third-party dependency clone) — left as-is.
+                                  Vendors RtAudio — clone it yourself, see its README.
 ```
 
 ## How the pieces connect
