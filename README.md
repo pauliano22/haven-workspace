@@ -28,6 +28,7 @@ git clone --recurse-submodules https://github.com/pauliano22/haven-workspace.git
 | `hardware/` | [haven-hardware](https://github.com/pauliano22/haven-hardware) | public, **Git LFS** |
 | `legacy_prototypes/teensy_hearing_shield` | [haven-legacy-teensy](https://github.com/pauliano22/haven-legacy-teensy) | public |
 | `legacy_prototypes/tinnitus_dsp` | [haven-legacy-dsp-sandbox](https://github.com/pauliano22/haven-legacy-dsp-sandbox) | public |
+| `website/` | [haven-website](https://github.com/pauliano22/haven-website) | public, GitHub Pages |
 
 `hardware/` uses Git LFS — run `git lfs install` once per machine before
 cloning, or `git lfs pull` afterward if you cloned before installing it.
@@ -82,13 +83,17 @@ haven_workspace/
 │                                 Reference only.
 ├── dsp_tuning/                    SigmaStudio / ADAU1860 filter + limiter configs.
 │                                 Currently empty — see dsp_tuning/README.md.
-└── legacy_prototypes/
-    ├── teensy_hearing_shield/    Validated Teensy 4.1 + SGTL5000 prototype — the
-    │                             multi-band notch filter design haven_zephyr_app's
-    │                             DSP math is ported from. Superseded, not extended.
-    └── tinnitus_dsp/              Desktop C++ DSP sandbox (RtAudio real-time notch,
-                                  offline test runners, numpy-verified filter math).
-                                  Vendors RtAudio — clone it yourself, see its README.
+├── legacy_prototypes/
+│   ├── teensy_hearing_shield/    Validated Teensy 4.1 + SGTL5000 prototype — the
+│   │                             multi-band notch filter design haven_zephyr_app's
+│   │                             DSP math is ported from. Superseded, not extended.
+│   └── tinnitus_dsp/              Desktop C++ DSP sandbox (RtAudio real-time notch,
+│                                 offline test runners, numpy-verified filter math).
+│                                 Vendors RtAudio — clone it yourself, see its README.
+└── website/                       Marketing site (GitHub Pages). Single-file static
+                                  HTML, same Sanctuary/Evergreen tokens as the app.
+                                  Hero mark ships as Radiant Bloom; five other
+                                  designed marks are swappable — see its README.
 ```
 
 ## How the pieces connect
@@ -131,3 +136,5 @@ reference, not built on top of.
 - Firmware status and TODOs: `firmware/haven_zephyr_app/README.md`.
 - Output-safety invariants (read before touching any tone/level code):
   `mobile_app/haven_custom_app/docs/safety.md`.
+- Swapping the website's logo, or seeing all seven designed marks:
+  `website/README.md`. Live at https://pauliano22.github.io/haven-website/.
