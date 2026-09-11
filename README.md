@@ -1,7 +1,7 @@
 # haven_workspace
 
 Working root for **Project Haven** — a wearable hearing-protection device
-(nRF52 + ADAU1860 DSP) with a companion mobile app. Haven's hardware and
+(nRF5340 + ADAU1860 DSP) with a companion mobile app. Haven's hardware and
 firmware are built on top of **OpenEarable**, an open-source ear-worn sensing
 platform; this workspace keeps Haven's own custom work alongside the
 OpenEarable reference material it's derived from, so the two are always easy
@@ -39,8 +39,14 @@ git clone --recurse-submodules https://github.com/pauliano22/haven-workspace.git
 cloning, or `git lfs pull` afterward if you cloned before installing it.
 
 The three OpenEarable reference repos are **not submoduled** — they're
-someone else's project, not pinned dependencies of ours. Clone them yourself
-if you need them:
+someone else's project, not pinned dependencies of ours. But
+`open-earable-2` is more than reference material: it contains a **working
+ADAU1860 driver** for this exact codec on this exact board
+(`src/drivers/ADAU1860.h` — the full register map; `ADAU1860.cpp` — the
+bring-up sequence; `Lark-fdsp.c` — a FastDSP program with five biquad
+slots and hardware safeload). Haven's own codec driver is a port of it —
+see the ADAU1860 driver PR on `haven-zephyr-app`. Clone them yourself if
+you need them:
 
 ```sh
 git clone https://github.com/OpenEarable/open-earable-2.git firmware/open-earable-2
@@ -63,20 +69,25 @@ haven_workspace/
 │   └── haven_dev_board/
 │       └── component_libraries/  Ultra Librarian Altium parts for chips on Haven's
 │                                 OWN stripped-down dev board: ADAU1860 (DSP) and
-│                                 SPH0645LM4H-B (MEMS mic). Haven's custom board
+│                                 SPH0645LM4H-B (MEMS mic). NOTE: the SPH0645 is an
+│                                 I2S mic; the stock board's SPH0641LU4H-1 is PDM and
+│                                 feeds the codec's DMIC pins directly — the custom
+│                                 board wants a PDM part too. Haven's custom board
 │                                 Altium source files go directly in haven_dev_board/
 │                                 once they exist — currently only the component
 │                                 libraries are present.
 ├── firmware/
 │   ├── open-earable-2/            Cloned upstream OpenEarable Zephyr firmware (nRF
 │   │                             Connect SDK — see its README for the VS Code +
-│   │                             J-Link + nRF-Util toolchain setup). Reference only;
-│   │                             don't commit changes here.
+│   │                             J-Link + nRF-Util toolchain setup). Don't commit
+│   │                             changes here, but DO read src/drivers/ADAU1860.*
+│   │                             and Lark-fdsp.c: that's the codec driver Haven's
+│   │                             firmware is ported from.
 │   └── haven_zephyr_app/          Haven's own Zephyr application: NUS BLE peripheral
 │                                 advertising as "Haven", the JSON control protocol
-│                                 parser, and the ADAU1860 driver (I2C/SPI
-│                                 transactions currently stubbed pending PCB
-│                                 bring-up). See its README.md and docs/.
+│                                 parser, and the ADAU1860 driver (I2C control port,
+│                                 32-bit register addresses, FastDSP safeload). See
+│                                 its README.md and docs/.
 ├── mobile_app/
 │   ├── haven_custom_app/          Haven's own Expo/React Native app — the real
 │   │                             product. Full docs in haven_custom_app/docs/
@@ -86,8 +97,12 @@ haven_workspace/
 │   └── open_earable_app/         Cloned OpenEarable reference native app
 │                                 (includes an "open_wearable" package).
 │                                 Reference only.
-├── dsp_tuning/                    SigmaStudio / ADAU1860 filter + limiter configs.
-│                                 Currently empty — see dsp_tuning/README.md.
+├── dsp_tuning/                    ADAU1860 FastDSP program variants (ADI Lark Studio
+│                                 projects + the "Download to Target" uint32 memory
+│                                 images — NOT SigmaStudio; see UG-2017). Currently
+│                                 empty — the first program to land here is a
+│                                 DMIC-input variant of upstream's Lark-fdsp.c; see
+│                                 dsp_tuning/README.md.
 ├── legacy_prototypes/
 │   ├── teensy_hearing_shield/    Validated Teensy 4.1 + SGTL5000 prototype — the
 │   │                             multi-band notch filter design haven_zephyr_app's
@@ -111,26 +126,74 @@ OpenEarable's board files, enclosure CAD, and firmware patterns stay directly
 comparable/reusable as Haven's own dev board (`hardware/haven_dev_board/`)
 and app diverge from the reference.
 
-The signal path, end to end:
+The signal path, end to end. The important shape: **the codec owns the
+audio path**; the nRF5340 is a BLE remote control that writes filter
+coefficients over I2C and is never in the mic→speaker loop (that's what
+keeps hear-through latency sub-millisecond and the nRF asleep most of the
+time).
 
 ```
 haven_custom_app (mobile_app/)
     │  Nordic UART Service, newline-terminated JSON, MTU 247
     ▼
-haven_zephyr_app (firmware/)  ──I2C/SPI control──▶  ADAU1860 DSP
-    │                                                (tuned via dsp_tuning/,
-    │                                                 once that exists)
+haven_zephyr_app (firmware/, nRF5340)
+    │  I2C1 control port (SDA1/SCL1, addr 0x64, 32-bit register addresses):
+    │  power-up sequence, FastDSP program load, biquad coefficient safeloads
     ▼
+ADAU1860 codec/DSP
+    PDM mic (SPH0641) ──DMIC──▶ FastDSP: ≤5 biquads → limiter → volume ──▶ DAC ──▶ speaker
+                                (program image from dsp_tuning/, once that exists)
+    ▲ I2S0 (nRF is bus master; codec's ASRCs absorb the clock domain) —
+      used for the LDL calibration tone, not for the hear-through path
+
 runs on hardware assembled from openearable_base_pcb/ + haven_dev_board/,
 housed in mechanical_cad/ enclosure
 ```
+
+### Paths to working hardware (none of them cheap)
+
+Three options, in the order worth considering. Prices as of Sept 2026.
+
+1. **Bench: nRF5340 DK + ADI EVAL-ADAU1860EBZ, ~$535** (DK ~$50; eval
+   board ~$485 at Newark). The eval board exposes the codec's DMIC input on
+   header P44 and serial port 0 (I2S) on header P2, so it wires to the DK
+   with exactly the real board's topology — PDM mic into the codec, nRF as
+   I2S master on the side, I2C control from the DK. It also carries the
+   USB interface ADI's **Lark Studio** talks to, which is how the
+   DMIC-input FastDSP program gets designed and verified before it's ever
+   loaded from the nRF. This is the lower-cost way to get real audio out
+   of the real codec.
+2. **The product hardware: a stock OpenEarable 2.0.** The Developer
+   Starter Bundle (OpenEarable 2.0.1) is **€2,348** at
+   shop.openwearables.com. It *is* Haven's hardware — same nRF5340 module,
+   ADAU1860, PDM mic, speaker, and enclosure (Haven's dev board is a KiCad
+   port of the stock main PCB) — so `haven_zephyr_app` flashes onto it
+   with a J-Link and OpenEarable's debug breakout, wired as shown in
+   `firmware/open-earable-2/README.md`. Expensive, but it's the only
+   option that yields an in-ear device to actually test with.
+3. **Fabricate `hardware/haven_dev_board/`** — only after the findings in
+   `haven-dev-board-kicad/HAVEN_HARDWARE_REVIEW.md` (antenna keepout,
+   ERC/DRC never run) are fixed, and only once there's a concrete reason
+   to diverge from stock (dropping sensors, cost). Not before Haven works
+   on option 1 or 2.
+
+Status of the hear-through path: the nRF side (BLE, protocol, safety
+watchdogs, persistence) runs on the nRF5340 DK; the codec driver is being
+ported from upstream (see the ADAU1860 driver PR on `haven-zephyr-app`);
+the remaining DSP work is a FastDSP program whose input is the DMIC
+rather than the I2S port (upstream's program takes I2S audio from the
+phone) — a schematic choice in Lark Studio's FastDSP tab, per the
+EVAL-ADAU1860 user guide (UG-2017). The one open **safety** item that no
+amount of firmware fixes: the app's `level_db` values are nominal until
+someone measures commanded level → actual dB SPL at the ear on real
+hardware.
 
 The `open_earable_flutter/` and `open_earable_app/` clones are **not**
 part of Haven's product — they're reference material for seeing how
 OpenEarable's own app talks to OpenEarable's own firmware, useful when
 Haven's BLE protocol or sensor handling needs a working example to compare
 against. `legacy_prototypes/` is where the DSP approach was first proven out
-on a Teensy before the nRF52/ADAU1860 hardware existed; it's kept for
+on a Teensy before the nRF5340/ADAU1860 hardware existed; it's kept for
 reference, not built on top of.
 
 ## Where to start
