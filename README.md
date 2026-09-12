@@ -171,11 +171,17 @@ Three options, in the order worth considering. Prices as of Sept 2026.
    with a J-Link and OpenEarable's debug breakout, wired as shown in
    `firmware/open-earable-2/README.md`. Expensive, but it's the only
    option that yields an in-ear device to actually test with.
-3. **Fabricate `hardware/haven_dev_board/`** — only after the findings in
-   `haven-dev-board-kicad/HAVEN_HARDWARE_REVIEW.md` (antenna keepout,
-   ERC/DRC never run) are fixed, and only once there's a concrete reason
-   to diverge from stock (dropping sensors, cost). Not before Haven works
-   on option 1 or 2.
+3. **Fabricate the rescaled bench board in `haven-dev-board-kicad`** —
+   the design has moved on since this list was first written: it is now a
+   5× rescaled bench board (73×161 mm) that is routing-complete except two
+   cosmetic same-net BGA pairs, DRC-checked, with the antenna keepout
+   implemented and a `FABRICATION_GUIDE.md` for turnkey PCBA (JLCPCB /
+   PCBWay; 0.35 mm BGA needs assembly, not hand soldering). **Read
+   `HAVEN_HARDWARE_REVIEW.md` §0.7 before ordering**: the rescale left the
+   32.768 kHz crystal 30 mm from the nRF module and the 24.576 MHz codec
+   crystal 14 mm from the ADAU1860, with every decoupling cap 8–50 mm from
+   its chip — a placement-only fix that is cheap now and impossible after
+   assembly. Order 3–5 boards, not one.
 
 Status of the hear-through path: the nRF side (BLE, protocol, safety
 watchdogs, persistence) runs on the nRF5340 DK; the codec driver is being
