@@ -129,18 +129,62 @@ unregulated PSAP/hearing-protection territory would mean:
   already positioned as hearing protection, not medical devices) as the
   actual comparison set, not audiologist-dispensed hearing aids.
 
+## Update: "hearing protector" may be a better regulatory home than "PSAP" — a different agency entirely
+
+Follow-up research, prompted by checking whether any competitor had public
+regulatory statements to learn from. Found something more useful than
+that: electronic/active hearing protection products (the category
+ISOtunes and similar Bluetooth-enabled earmuffs/earbuds for shooting,
+construction, and industrial use are in) aren't positioned under the
+FDA PSAP-vs-hearing-aid framework above **at all**. They're regulated
+under a completely different, separate framework:
+
+- **40 CFR Part 211, Subpart B** (EPA, not FDA) governs hearing
+  protective device *noise labeling* — the Noise Reduction Rating (NRR)
+  every earplug/earmuff box shows, tested per the ANSI S3.19-1974
+  method. This is a labeling/testing requirement, not a medical device
+  clearance process — a fundamentally different, lighter-weight regime
+  than anything in the FDA section above.
+- This is genuinely the more accurate category for Haven's actual core
+  function: Haven **dampens/filters loud sound** rather than
+  **amplifying quiet sound** — attenuation, not amplification. FDA's
+  whole hearing-aid/PSAP framework above is specifically about
+  amplification products; a pure hearing protector was never really
+  the thing that framework was written for in the first place.
+- **A real, unresolved wrinkle worth flagging honestly**: the classic
+  ANSI S3.19-1974 NRR test method is explicitly noted (in ANSI's own
+  materials) as not well-suited to testing anything other than *passive*
+  protectors — a plain foam earplug, not an active DSP device like
+  Haven. A newer standard, ANSI/ASA S12.68, covers *estimating* real-
+  world effective exposure levels for protectors generally, but a
+  quick pass didn't turn up one specific standard obviously written for
+  "electronic/level-dependent hearing protector, NRR-style labeling"
+  the way S3.19 covers passive ones. This needs a real acoustics/
+  regulatory consultant to resolve properly, not more web searching —
+  but the more important point stands even with this open: "hearing
+  protector" (EPA/ANSI, product-safety labeling) looks like a
+  meaningfully better regulatory fit for Haven's actual function than
+  "PSAP" (FDA, medical-device-adjacent) was in the first draft of this
+  doc, and is worth leading with when this gets in front of real
+  counsel rather than starting from the FDA framing.
+
 ## What this doesn't resolve
 
+- The exact standard (if one exists) for NRR-equivalent labeling on an
+  *active/electronic* hearing protector, as opposed to a passive earplug
+  — flagged above, not found in this pass.
 - Whether tinnitus/hyperacusis sound-therapy apps (not hardware) have their
   own separate FDA digital-therapeutics pathway (some do, under different
   rules than hearing aids) wasn't researched here — a different question
-  from the PSAP/hearing-aid line above, and worth its own pass if the app
-  ever adds features explicitly framed as therapy.
-- Whether existing musician-hearing-protection competitors with
-  DSP/software features (if any emerge) have already tested this exact
-  line with FDA — worth checking before assuming the safe framing above
-  is bulletproof in practice, not just on paper.
-- This is one FDA webinar transcript plus the underlying framework, not a
-  full regulatory review. Treat this as "here's the shape of the real
-  question," not "here's the final answer" — get real counsel before
-  committing to final product copy, packaging, or app store descriptions.
+  from the hearing-protector/PSAP/hearing-aid lines above, and worth its
+  own pass if the app ever adds features explicitly framed as therapy.
+- Whether existing musician-hearing-protection or industrial electronic-
+  hearing-protection competitors with DSP/app features have already
+  tested either of these regulatory lines (PSAP or hearing-protector)
+  with FDA/EPA directly — a search for their own public regulatory
+  statements didn't turn up anything specific enough to cite here.
+- This is web research plus one FDA webinar transcript, not a full
+  regulatory review. Treat this as "here's the shape of the real
+  question, and which agency's door to knock on first," not "here's the
+  final answer" — get real counsel before committing to final product
+  copy, packaging, or app store descriptions.
