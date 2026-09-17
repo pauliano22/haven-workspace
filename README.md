@@ -143,3 +143,6 @@ reference, not built on top of.
   `mobile_app/haven_custom_app/docs/safety.md`.
 - Swapping the website's logo, or seeing all seven designed marks:
   `website/README.md`. Live at https://pauliano22.github.io/haven-website/.
+- Before finalizing any product copy, app store listing, or packaging:
+  `REGULATORY_POSITIONING.md` — marketing language, not the hardware,
+  determines whether this needs FDA clearance as a medical device.
