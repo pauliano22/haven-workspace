@@ -149,3 +149,6 @@ reference, not built on top of.
 - Looking for funding: `FUNDING_RESEARCH.md` — real federal SBIR
   precedent (not just Cornell programs) for this exact kind of
   smart/active hearing protection.
+- Thinking about pricing: `MARKET_POSITIONING.md` — real competitor
+  prices across the passive-to-active spectrum, and what that implies
+  for where a DSP/app-controlled product should sit.
