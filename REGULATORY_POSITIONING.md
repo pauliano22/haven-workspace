@@ -168,6 +168,42 @@ under a completely different, separate framework:
   doc, and is worth leading with when this gets in front of real
   counsel rather than starting from the FDA framing.
 
+## Update: a third, real regulatory category this doc had missed entirely — tinnitus maskers
+
+Found via `haven-dev-board-kicad`'s parallel `haven-custom-app` work
+(`docs/clinical-basis.md`, PR #6), which cites it directly as part of its
+own claims/regulatory line. Verified independently against the actual
+regulation (ecfr.gov, 21 CFR 874.3400) rather than trusting the citation
+alone:
+
+- **21 CFR 874.3400 "Tinnitus masker"** is a real, existing FDA device
+  category: "an electronic device intended to generate noise of
+  sufficient intensity and bandwidth to mask ringing in the ears or
+  internal head noises." **Class II** (more regulated than most of the
+  hearing-aid/PSAP discussion above), product code **KLW**, with special
+  controls requiring patient labeling about professional diagnosis/
+  fitting/follow-up, risks, benefits, warnings, and specifications.
+- **This is a third possible bucket**, distinct from both "hearing aid"
+  and "PSAP" — and one this doc never considered, despite the app having
+  tinnitus pitch-matching features that are conceptually adjacent.
+- **The real distinguishing line, worth being precise about**: a tinnitus
+  masker *generates* masking noise. Haven's actual mechanism — dampening/
+  filtering specific frequencies in ambient sound, informed by a pitch-
+  match test — doesn't generate anything; it's closer to an EQ than a
+  noise generator. That's a real, defensible distinction, not just a
+  semantic dodge, but it's a distinction that needs to survive contact
+  with how the *feature* gets described (a "personalized softening band
+  derived from tinnitus pitch matching" is close enough to "addressing
+  tinnitus" that careless copy could blur this line) — exactly the same
+  general risk already flagged above for the PSAP/hearing-aid boundary,
+  now with a third, more heavily regulated category to accidentally
+  wander into.
+- `clinical-basis.md`'s own claims line (per its PR description) already
+  states "not a [tinnitus masker]; not an HPD; not an OTC hearing aid" —
+  i.e., that work independently reached a similar "stay out of all three
+  regulated buckets" conclusion. Worth reading that doc directly rather
+  than treating this note as a substitute for it.
+
 ## What this doesn't resolve
 
 - The exact standard (if one exists) for NRR-equivalent labeling on an
