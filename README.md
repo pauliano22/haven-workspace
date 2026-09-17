@@ -146,3 +146,6 @@ reference, not built on top of.
 - Before finalizing any product copy, app store listing, or packaging:
   `REGULATORY_POSITIONING.md` — marketing language, not the hardware,
   determines whether this needs FDA clearance as a medical device.
+- Looking for funding: `FUNDING_RESEARCH.md` — real federal SBIR
+  precedent (not just Cornell programs) for this exact kind of
+  smart/active hearing protection.
