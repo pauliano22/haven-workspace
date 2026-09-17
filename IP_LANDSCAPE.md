@@ -62,6 +62,20 @@ broad, decade-long-remaining patent specifically on personalized active
 hearing protection is a materially different kind of competitor than a
 passive-earplug maker.
 
+**Follow-up, somewhat reassuring**: Eers (Montreal, founded 2014) appears
+to have moved on from consumer/musician hearing protection specifically —
+current search results describe them as focused on "high-noise IoT
+hearing protection with in-ear communication and worker safety
+monitoring" (industrial) and, per their own site's page title, an "MRI
+Audio Platform" (medical imaging, a genuinely different market again).
+Their own site (`eers.ca`) returned a server error when checked directly,
+so this is search-snippet-level confidence, not a confirmed current
+product lineup. **The patent itself doesn't care whether they still ship
+a consumer product** — it's enforceable regardless of what Eers currently
+sells — but this does mean they're less likely to currently be a *direct
+market* competitor for Haven's specific consumer/musician positioning,
+even though their IP could still matter.
+
 ## Why this specific claim area matters for Haven
 
 Eers' patent personalizes based on **measured individual ear-canal
