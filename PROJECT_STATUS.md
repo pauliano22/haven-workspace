@@ -7,22 +7,41 @@ every time you sit down is real overhead. This is the orientation doc —
 read this first, then follow the links into whichever PR/doc actually
 needs your decision.
 
-## The one thing that actually needs a decision from you
+## Decided: keep the ADAU1860. Don't merge my redesign.
 
-**Two competing analyses of the codec question, both substantive.** Read
-`haven-dev-board-kicad#6` and `haven-zephyr-app#9` before merging anything
-codec-related on either side. Short version: my own redesign
-(`haven-dev-board-kicad#8`) replaces the ADAU1860 to escape its fine-pitch
-BGA package and its "we can't know this chip" tooling problem. A parallel
-effort shows that problem was solvable (ported a real, working driver from
-upstream OpenEarable) and raises something my redesign never checked at
-all — hear-through latency, which is close to the actual point of the
-product. Full trace in `haven-dev-board-kicad/HARDWARE_COST_ALTERNATIVES.md`'s
-"STOP" section near the end.
+The codec question is settled — the parallel effort's case
+(`haven-dev-board-kicad#6`, `haven-zephyr-app#9`) is right: the "we can't
+know this chip" problem was solvable (they ported a real, working driver
+from upstream OpenEarable, 120+ tests, independently re-verified by me),
+and my redesign never checked hear-through latency at all, which is close
+to the actual point of the product. Don't merge `haven-dev-board-kicad#8`.
 
-**What's *not* in question**: the charger swap (`haven-dev-board-kicad#8`'s
-commits 1-2, TP4056/TPS62822/TPS22917 replacing BQ25120A) stands on its
-own regardless of how the codec question resolves.
+**A real consequence of that decision, worth knowing**: the charger swap
+in that same PR (TP4056/TPS62822/TPS22917 replacing BQ25120A) *also*
+shouldn't be merged for now — not because it's wrong, but because keeping
+the ADAU1860 (the single worst fine-pitch offender of the original three)
+means the board stays in the same expensive fab tier regardless of what
+happens to the charger. Verified this is real (PCB fab pricing is set by
+the whole board's worst-case feature size, not per-component), so the
+charger swap wouldn't actually reduce the ~$500 quote that started this
+investigation — and it's also unrouted and untested. Full reasoning in
+`haven-dev-board-kicad/HARDWARE_COST_ALTERNATIVES.md`'s "Decided" section.
+
+**The fastest real path to an orderable board**: merge just the
+crystal-placement fixes (`#3`→`#5`→`#7` below), skip the codec and charger
+work entirely for this first order, ship close to the stock design.
+
+## What needs your click, right now
+
+I've fully reviewed all of the parallel effort's PRs myself — read the
+actual code, independently reproduced their key technical claims, ran
+their real test suites (not just trusted the PR descriptions). They're
+good. I can't merge or close PRs myself; Claude Code's own permission
+system blocks that regardless of what you tell me verbally, and working
+around it isn't something I'll do. **On `haven-dev-board-kicad`, merge
+`#3`, then `#5`, then `#7`, in that order** (each builds on the last) —
+that's the crystal-placement fix, the one thing actually blocking an
+order. Everything else below is real and good but not blocking.
 
 ## The two bodies of work
 
@@ -30,8 +49,8 @@ own regardless of how the codec question resolves.
 
 | Repo | PR | What | Status |
 |---|---|---|---|
-| haven-dev-board-kicad | [#8](https://github.com/pauliano22/haven-dev-board-kicad/pull/8) | Charger swap (sound) + codec/mic swap (contested, see above) | Charger half ready for review; codec half paused |
-| haven-zephyr-app | [#15](https://github.com/pauliano22/haven-zephyr-app/pull/15) | NUS TX acks, firmware side | **Redundant** — `#12` below does this better |
+| haven-dev-board-kicad | [#8](https://github.com/pauliano22/haven-dev-board-kicad/pull/8) | Charger swap + codec/mic swap | **Superseded, close it** — see "Decided" above |
+| haven-zephyr-app | [#15](https://github.com/pauliano22/haven-zephyr-app/pull/15) | NUS TX acks, firmware side | **Redundant** — close, `#12` below does this better |
 | haven-app | [#9](https://github.com/pauliano22/haven-app/pull/9) | NUS TX acks, app side | Needs rework if `#12` merges instead (different wire format) |
 
 ### The parallel effort (victorzhu443) — broader, deep, mostly ADAU1860-keeping
@@ -80,14 +99,15 @@ contributor's own fork CI, none of it has run on real hardware yet.
 
 ## A reasonable order to go through all this, whenever you have time
 
-1. Read `haven-dev-board-kicad#6` and `haven-zephyr-app#9` (30-45 min) —
-   this unblocks everything else hardware/firmware-related.
-2. Decide: keep-and-fix-the-ADAU1860 (the parallel effort's direction) or
-   replace-the-codec (my direction) — or measure first, per `#6`'s own
-   suggested ~$200/one-week latency experiment.
-3. Once decided, the losing side's PRs can close and the winning side's
-   can start getting real review/merge attention.
-4. The charger swap (`haven-dev-board-kicad#8` commits 1-2) can be
-   reviewed independently of all of the above, any time.
+1. Merge `haven-dev-board-kicad#3` → `#5` → `#7` — unblocks ordering a
+   working board. This is the one time-sensitive item.
+2. Close `haven-dev-board-kicad#8` (my redesign) — superseded by the
+   decision above, on both the codec and charger halves.
+3. Merge the firmware stack (`haven-zephyr-app#8`→`#9`→`#10`→`#13`→`#14`)
+   and the app stack (`haven-app#6`→`#7`→`#8`) whenever convenient — real,
+   tested, good work, but doesn't block ordering the PCB itself.
+4. Resolve the NUS-ack duplication: close my `haven-zephyr-app#15`, merge
+   `#12` instead; then decide whether my `haven-app#9` needs reworking to
+   match `#12`'s wire format or can also close.
 5. Business docs are read-when-convenient, no blocking dependency on
    anything else.
