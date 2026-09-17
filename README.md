@@ -152,3 +152,7 @@ reference, not built on top of.
 - Thinking about pricing: `MARKET_POSITIONING.md` — real competitor
   prices across the passive-to-active spectrum, and what that implies
   for where a DSP/app-controlled product should sit.
+- Before committing engineering time to a specific personalization
+  approach: `IP_LANDSCAPE.md` — a real, active, decade-remaining patent
+  exists on personalized active hearing protection, from a competitor
+  not previously on the radar.
