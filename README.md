@@ -1,5 +1,10 @@
 # haven_workspace
 
+**→ [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — start here.** Two
+substantial, independent bodies of work are sitting across 15 open PRs
+right now, including a real architectural fork that needs your decision
+before anything hardware/firmware-related merges. That doc is the map.
+
 Working root for **Project Haven** — a wearable hearing-protection device
 (nRF52 + ADAU1860 DSP) with a companion mobile app. Haven's hardware and
 firmware are built on top of **OpenEarable**, an open-source ear-worn sensing
