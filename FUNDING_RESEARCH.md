@@ -95,6 +95,15 @@ still point to):
   worth investigating as a visibility/partnership channel independent of
   applying for money directly, especially before a first SBIR application
   where having a credible existing connection in the space helps.
+  **Real, current co-chairs found** (cdc.gov/nora/councils/hlp/members.html):
+  Laurie Wells (3M), and NIOSH's own HLP program co-coordinators Amanda
+  Azman and Elizabeth Masterson — the latter two are directly-reachable
+  NIOSH staff who literally run the program the SBIR precedent above was
+  funded under, a real warm-ish path to the same "reach out before writing
+  a full proposal" step already recommended. Most other private-sector
+  members (Caterpillar, Komatsu Mining, Milwaukee Tools) are large
+  industrial/occupational-PPE companies, not close analogs to a consumer
+  wearable — useful for the network and NIOSH access, not as direct peers.
 
 ## What this doesn't resolve
 
