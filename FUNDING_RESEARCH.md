@@ -125,3 +125,45 @@ still point to):
   blocked the fetch; sbir.gov's award database was used instead, which
   gave real amounts/titles but not full technical abstracts) — worth
   pulling those before citing this precedent in an actual application.
+
+## Update 2026-09-18: what a full-time student can actually apply for
+
+**SBIR/STTR is open again.** Authorization lapsed 2025-09-30 and was restored
+by law on 2026-04-13 (through 2031), so new applications are accepted.
+
+**Big eligibility catch for the NIOSH/NIH SBIR route above:** the Principal
+Investigator must be >50% employed by the small business at award time (NSF
+treats >~20 hrs/week elsewhere as a conflict). A full-time student generally
+does not meet this. Realistic paths: form a company and have the PI role held
+by someone employed by it (may mean leaving full-time student status or
+adding a co-founder/hire), or use STTR (company + research-institution
+partner; PI can sit at the institution). Not researched in depth; needs a
+conversation with NIOSH's contact or Cornell's I-Corps hub before anyone
+writes a proposal.
+
+**Student/university-friendly options, in a sensible order:**
+1. **NSF I-Corps via Cornell (Interior Northeast I-Corps Hub, CREA).**
+   Regional course first (free/cheap, customer-discovery training), then
+   National I-Corps Teams: up to $50,000, of which a $10,000 participation
+   fee is paid from the award; team of 3-5 (usually faculty PI + student
+   entrepreneurial lead + mentor - a faculty PI may be required; confirm).
+   Contact: icorps@cornell.edu; hub coordinator Shannon Ellis
+   (sts63@cornell.edu); courses listed at in-icorps.org/regional-courses.
+   The 2026 spring/summer deadlines (May 6, June 17) have passed; fall
+   dates weren't listed on the page fetched - ask.
+2. **Blackstone LaunchPad** (Cornell, no deadline) - use it to sanity check
+   the above.
+3. **Collegiate Inventors Competition** (National Inventors Hall of Fame):
+   up to $15,000 for student inventors with original, unpatented ideas.
+   Sources disagreed on the deadline (June 1 vs Sept 25) and one said the
+   Lemelson-MIT Student Prize is discontinued - verify on the official
+   site before relying on any date. Note "unpatented" - don't publish
+   details or file publicly before checking `IP_LANDSCAPE.md` and counsel.
+4. **Cornell Startup Awards** (May 2027) and **eLab** (next August).
+5. **NIOSH R03 small grant** ($50k/yr direct, 2 yrs): institution-based, so
+   it would need a Cornell faculty sponsor - same PI problem, different
+   solution.
+
+Not verified: hearing-health foundations (e.g. Hearing Health Foundation,
+American Tinnitus Association) fund researchers/universities, not products;
+likely only relevant if a Cornell lab partners with you.
