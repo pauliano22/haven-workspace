@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="Haven mark">
+  <rect width="120" height="120" rx="26" fill="#111F1A"/>
+  <circle cx="60" cy="60" r="34" fill="#1A2B25"/>
+  <!-- ring with a notch gap at top-right (~1 o'clock) -->
+  <path d="M 60 22 A 38 38 0 1 0 90.6 37.4" fill="none" stroke="#E9A860" stroke-width="7" stroke-linecap="round" transform="rotate(20 60 60)"/>
+  <circle cx="60" cy="60" r="9" fill="#F4EEE1"/>
+</svg>
