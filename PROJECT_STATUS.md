@@ -1,11 +1,58 @@
 # Project status — start here
 
 A single map of everything in flight across all 5 repos, written because
-there are now two substantial, independent bodies of work sitting in 15
-open PRs plus 4 new research docs, and reconstructing that from scratch
+there are now two substantial, independent bodies of work sitting in 23
+open PRs plus several research docs, and reconstructing that from scratch
 every time you sit down is real overhead. This is the orientation doc —
 read this first, then follow the links into whichever PR/doc actually
 needs your decision.
+
+## Update 2026-09-27 (overnight, `/loop`): a third body of work, still unmerged
+
+Everything in "What needs your click" and "A reasonable order" below is
+**unchanged and still the priority** — nothing has merged. Overnight, while
+waiting on that, I did real RL/ML/"frontier AI" research and prototyping
+for the product itself (a different thing from the hardware-bring-up work
+below), per an explicit request to keep researching/building that
+regardless of merge status. All new, all tested, all in its own PRs so it
+doesn't tangle with anything above:
+
+- **`ML_RL_FEASIBILITY.md`** (haven-zephyr-app root) — the actual research:
+  what's real, buildable, tested, or ruled out for RL/ML on this product.
+  Read this one first if you want the full reasoning; everything below is
+  the code that came out of it.
+- **[haven-app#10](https://github.com/pauliano22/haven-app/pull/10)** — a
+  preference-guided tuner (A/B comparisons converge on softening depth and
+  width), the real thing commercial hearing aids do, built from scratch,
+  honestly not a learned model. 15 tests, one real bug caught by them
+  before it shipped.
+- **[haven-app#11](https://github.com/pauliano22/haven-app/pull/11)** — a
+  plain-language trend summary. Deterministic stats layer (no AI, useful on
+  its own) plus a tested LLM-rewrite step with a faithfulness check that
+  discards any AI-added number not in the source data — the actual thing
+  that makes an LLM feature honest here. Also includes a full reference
+  backend (`server/llm-relay/`) and its app-side caller, both tested,
+  **neither deployed** — going live needs your own Cloudflare account and
+  API key, a real decision left for you.
+- **[haven-app#12](https://github.com/pauliano22/haven-app/pull/12)** —
+  local prep for a dev-client build (the one thing blocking real BLE
+  hardware testing, on-device sound classification, and any WASM audio
+  work). Found and fixed a real bug along the way (dark mode was silently
+  broken outside Expo Go). The one remaining step needs your Expo account.
+- **[haven-zephyr-app#16](https://github.com/pauliano22/haven-zephyr-app/pull/16)**
+  — a continuous version of the existing PSD-peak tool, so it tracks a
+  changing problem tone over time instead of averaging a whole recording
+  into one answer.
+- **Two real dead ends, documented rather than hidden**: RNNoise
+  (suppresses 63-99.9% of the non-speech tones this product needs to find —
+  tested, not assumed) and a placement check that ruled out the nRF5340 and
+  the ADAU1860's FastDSP core for that same idea. Negative results are in
+  `ML_RL_FEASIBILITY.md` too, not swept under anything.
+
+None of this blocks the board order or the hardware bring-up work below —
+it's a parallel track. Merge order for it, whenever convenient: `#10`,
+`#11`, `#12` (haven-app, no dependency between them) and `#16`
+(haven-zephyr-app, independent of the firmware stack below).
 
 ## Decided: keep the ADAU1860. Don't merge my redesign.
 
