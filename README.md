@@ -1,9 +1,10 @@
 # haven_workspace
 
-**→ [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — start here.** Two
-substantial, independent bodies of work are sitting across 15 open PRs
-right now, including a real architectural fork that needs your decision
-before anything hardware/firmware-related merges. That doc is the map.
+**→ [`PROJECT_STATUS.md`](PROJECT_STATUS.md) — start here.** Multiple
+substantial, independent bodies of work are sitting across 20+ open PRs
+right now (the current count is always in that doc, not repeated here),
+including a real architectural fork that needs your decision before
+anything hardware/firmware-related merges. That doc is the map.
 
 Working root for **Project Haven** — a wearable hearing-protection device
 (nRF52 + ADAU1860 DSP) with a companion mobile app. Haven's hardware and
@@ -161,3 +162,6 @@ reference, not built on top of.
   approach: `IP_LANDSCAPE.md` — a real, active, decade-remaining patent
   exists on personalized active hearing protection, from a competitor
   not previously on the radar.
+- RL/ML/"frontier AI" work on the product itself — what's real, what's
+  tested and built, and what was tried and ruled out with actual data:
+  `firmware/haven_zephyr_app/ML_RL_FEASIBILITY.md`.
