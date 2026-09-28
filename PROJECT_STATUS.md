@@ -56,6 +56,13 @@ safe.
   have push access to fix this myself (it's a contributor's fork branch,
   not mine), but it should take under a minute in GitHub's own web
   conflict editor with that in mind.
+  **Separately, victorzhu443 commented on the PR (real, current, 2026-09-27
+  evening)**: their fork's CI has been stuck on the "Initialize containers"
+  step (a `ghcr.io` image-pull stall) across three run attempts — an
+  Actions/registry-side issue, not a build error, no step of theirs has run
+  yet. Their own host tests pass locally; the actual firmware compile for
+  this PR's two commits just isn't verified by CI yet, separate from the
+  merge conflict above.
 - **`haven-app#9` (NUS acks, app side) is now in a genuinely unresolved
   state, not just "needs rework."** It was written against my closed
   `#15`'s wire format, with the plan being "rework it if `#12` merges
