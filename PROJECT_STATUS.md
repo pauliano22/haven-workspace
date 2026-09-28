@@ -40,14 +40,22 @@ safe.
 
 **Two things I deliberately did NOT do, both need your actual attention:**
 
-- **`haven-zephyr-app#12` (NUS acks + LFRC fallback) would not merge —
-  a real, persistent conflict.** GitHub reports `CONFLICTING` and refuses
-  the merge; I checked out the PR branch and merged master into it locally
-  myself, and git reported a clean merge with zero conflict markers. I
-  don't fully trust either signal given that mismatch, and this is
-  firmware, so I stopped rather than force it. Worth resolving on GitHub's
-  web UI directly, where the actual conflicting hunk (if there is one)
-  should be visible.
+- **`haven-zephyr-app#12` (NUS acks + LFRC fallback) would not merge — a
+  real conflict, and a correction to what I said here earlier.** I first
+  read this as GitHub being wrong (a local test merge showed no conflict at
+  all), and said so above. That test was against a stale master — I'd
+  since merged the whole firmware stack (`#8`→`#14`) in between, and
+  against *current* master there's a real conflict in two files, confirmed
+  by re-running the same local test. GitHub was right the whole time; my
+  diagnostic just used an outdated comparison point. **The actual conflict
+  is trivial, though** — `#12` and the now-merged `#13` each added their
+  own CI matrix entry (`.github/workflows/build.yml`, one line each) and
+  their own test name to the shared list (`tests/host/run_tests.sh`), on
+  adjacent lines. Nothing is actually incompatible — the fix is keeping
+  *both* matrix entries and *both* test names, not picking one. I don't
+  have push access to fix this myself (it's a contributor's fork branch,
+  not mine), but it should take under a minute in GitHub's own web
+  conflict editor with that in mind.
 - **`haven-app#9` (NUS acks, app side) is now in a genuinely unresolved
   state, not just "needs rework."** It was written against my closed
   `#15`'s wire format, with the plan being "rework it if `#12` merges
