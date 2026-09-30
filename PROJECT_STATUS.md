@@ -1,5 +1,61 @@
 # Project status — start here
 
+## Update 2026-09-30: two real new PRs reviewed, my own four rebased clean
+
+Checked in after a quiet stretch and found real new activity, not just
+silence:
+
+- **`haven-app#14`** (victorzhu443) — the correct app-side ack
+  implementation, written against `haven-zephyr-app#12`'s real wire format,
+  **explicitly supersedes `#9`**. I reviewed this properly, not just the PR
+  description: checked out the branch, ran `tsc` (clean, both native and
+  web module resolution) and the full test suite myself (157/157, matching
+  the PR's own claim exactly), and spot-checked the three safety-relevant
+  claims directly in the source rather than trusting the writeup — the
+  `tone_watchdog` handler genuinely never sends `TONE_STOP` after the
+  device has already silenced itself, the applied-level echo is genuinely
+  reclamped before use (can lower the meter, never raise it past the
+  ceiling), and the `dac_source` allow-list genuinely fails closed for any
+  unrecognized value. All three checked out exactly as described. **My
+  read: this is good, and resolves the `#9` ambiguity — merge this, close
+  `#9`.** Not done by me; that's still your click.
+- **`haven-dev-board-kicad#9`** (victorzhu443) — fills in the ADAU1860
+  active-current number `POWER_BUDGET.md` explicitly left as "not
+  verified" (the one I couldn't get — two direct PDF fetches from ADI
+  timed out from this session, both times). Real page citations (Tables
+  6–8, pp. 9–10 of ADAU1860 Rev. 0), and the battery-referred arithmetic
+  checks out (3–8 mW ÷ (3.7 V × ~85% regulation) ≈ 1–2.5 mA, matching their
+  stated result). Docs-only, no board/BOM change. I didn't independently
+  re-fetch the PDF myself to verify the raw page citations (same fetch
+  problem as before), so that part is trust-but-cite, not independently
+  reproduced — worth knowing if this number ever matters for a real
+  spec decision. Also flags one real, specific, checkable bring-up risk:
+  the codec crystal's max load capacitance (20 pF, Table 2) is close to
+  what the board's 2×33 pF caps plus stray capacitance produce
+  (~19–22 pF) — not a defect (stock OpenEarable uses the same values), but
+  worth trying 22 pF caps first if the codec crystal doesn't start.
+- **My own four PRs (`haven-app#10/#11/#12/#13`) had drifted into real
+  merge conflicts** against current master (confirmed with actual `git
+  merge`, not just GitHub's sometimes-flaky mergeable field) — the
+  evidence-programme merge from a few days ago added its own code at the
+  same spot in `Tune.tsx` and `docs/roadmap.md` that my own work did, and
+  I'd never rebased after it landed. Fixed properly: merged master into
+  each branch, resolved every conflict by keeping both sides (nothing was
+  actually incompatible, just additive), reverified `tsc`/`jest` clean
+  after each one, then pushed. **All four are genuinely `MERGEABLE` again
+  now** — nothing left blocking them but your review.
+- **`haven-zephyr-app#12`'s conflict is also resolved** — the contributor
+  read this file's own diagnosis, rebased, kept both CI matrix entries and
+  both test names exactly as described here, and confirmed host tests
+  pass. CI on GitHub now builds all four matrix configs clean. This one's
+  fully ready too.
+
+I did not merge or close anything in this pass — reviewing and fixing
+conflicts on branches I have write access to is different from the merge
+decision itself, and I said I'd be more conservative about that until you
+weighed in on the earlier backlog merge. **Everything listed above is
+ready for your review/click; `#9` is the one thing to close, not fix.**
+
 ## Update 2026-09-27, evening: the board is unblocked. Most of the backlog is merged.
 
 Permissions that had blocked every merge/close attempt all session lifted
