@@ -1,5 +1,56 @@
 # Project status — start here
 
+## Update 2026-10-01/02: a second hardware track opened — the codec decision isn't as settled as it looked
+
+Since the previous update (below) declared the ADAU1860 board "ready to order, nothing
+blocking," a separate, substantial effort happened on `haven-dev-board-kicad`: a full
+schematic + PCB redesign swapping the ADAU1860 for TAC5301-Q1 (cheaper QFN codec), motivated by
+the ~$500/5-board quote becoming a real blocker. That work is real and complete on its own
+terms — `redesign/tac5301-codec-swap` (PR #11) is 100% routed, 0 shorts, 0 unconnected items,
+DRC-verified — but it was built on an unverified premise: `TAC5301_EVALUATION.md` (PR #10)
+explicitly said to bench-verify the part's real hear-through latency *before* committing PCB
+time, and that didn't happen before the schematic/PCB work went ahead.
+
+**Caught up on this properly just now** (read every hardware doc across `haven-dev-board-kicad`,
+`haven-workspace`, and `haven-hardware` in full, not just the latest status) and did the thing
+that was skipped:
+
+- **Designed the real bench experiment** (`haven-dev-board-kicad` PR #12,
+  `TAC5301_BENCH_EXPERIMENT.md`) — fetched and read the actual TAC5301-Q1 datasheet (SLASFD9A),
+  found the device needs no crystal (PLL locks to BCLK/FSYNC, confirmed from the datasheet text),
+  and the minimal working hear-through loopback needs only 5 I2C register writes since the
+  reset-default state already loads unity-gain passthrough into all 6 biquad slots. ~$10-15 BOM,
+  reuses `haven-zephyr-app`'s existing `measure.py`/`audio_io.py` calibration math standalone
+  (confirmed no BLE dependency) — no EVM purchase needed.
+- **Found a real, previously-undocumented tradeoff while at it**: pulled TAC5301-Q1's actual
+  current-consumption table from the same datasheet (`POWER_BUDGET.md`'s 2026-10-01 update) —
+  it draws roughly **2-6x more current than the ADAU1860** in every comparable state. This sits
+  alongside the already-known latency gap (TAC5301 ~120-190µs vs the ADAU1860's real, measured
+  **12.9µs** — three orders of magnitude under the 1ms comb-filter threshold, per
+  `ADAU1860_DATASHEET_NOTES.md`, read 2026-09-29, one day before the TAC5301 branch started).
+  Neither is disqualifying by itself, but together they're a real case for not treating the
+  cheaper part as a free upgrade.
+- **Fixed a real bug found during a schematic/PCB consistency pass**: the TAC5301's own HVDD pin
+  had no label at all in the schematic (a gap from the multi-stage redesign process), so the
+  logical netlist never actually included it in the HVDD net despite real PCB copper being
+  routed there. Fixed; every other pin of the 15 added components checked out.
+- **Updated PR #11's title/body** to stop claiming "stage 1 of N, WIP" when the actual PCB work
+  is complete — it was just waiting on an accurate status, not more routing.
+
+**What this means practically**: there are now two real, viable hardware paths, not one.
+- **Path A (ADAU1860, current `master`)**: proven, driver exists (120+ tests), real latency
+  measured at 12.9µs, real power numbers known, zero new firmware work — genuinely "order it
+  today" ready, as the earlier update below says.
+- **Path B (TAC5301-Q1, `redesign/tac5301-codec-swap`)**: cheaper part and (if it also addresses
+  the charger/fuel-gauge) a real shot at a materially cheaper board, but needs the PR #12 bench
+  experiment run for real before trusting it, a new codec driver written from scratch (~400-600
+  lines, no existing tests), and accepts a real latency/power regression vs. path A in exchange
+  for the cost savings.
+
+**Not decided by me — this is exactly the kind of call that's yours.** Both branches are in a
+real, documented, non-misleading state now; neither is blocked on cleanup work, only on an actual
+decision (and, for Path B, a cheap bench experiment) whenever you have bandwidth for it.
+
 ## Update 2026-09-30: two real new PRs reviewed, my own four rebased clean
 
 Checked in after a quiet stretch and found real new activity, not just
