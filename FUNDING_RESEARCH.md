@@ -167,3 +167,39 @@ writes a proposal.
 Not verified: hearing-health foundations (e.g. Hearing Health Foundation,
 American Tinnitus Association) fund researchers/universities, not products;
 likely only relevant if a Cornell lab partners with you.
+
+## Update 2026-10-02: three claims above re-checked against live/official sources
+
+1. **Collegiate Inventors Competition deadline resolved**: June was correct,
+   not September (checked directly against `invent.org`'s own page, not a
+   scholarship-aggregator summary). **The 2026 cycle is now closed** — the
+   site's own text: "Entries for the 2026 Collegiate Inventors Competition
+   are closed. Check back next spring for information on the 2027
+   competition." If this is still a target, 2027 is the realistic cycle,
+   not 2026.
+2. **Lemelson-MIT Student Prize confirmed genuinely discontinued** (ran
+   1995-2021, confirmed closed as of 2026) — not merged into or revived
+   under a different name. A same-named page exists at `lemelson.org/lmit-
+   student-prize` but it's stale 2018-dated content, not evidence of a
+   current, separate active program — don't be misled by it if this comes
+   up again later.
+3. **SBIR/STTR reauthorization confirmed, with real new details the original
+   research didn't have**: the law is the **Small Business Innovation and
+   Economic Security Act (S.3971)**, signed April 13, 2026, following the
+   Sept 30, 2025 lapse this doc already noted — extends both programs
+   through Sept 30, 2031, matching what was already written. **New,
+   substantive changes from the reauthorization itself** (not in the
+   original research, found checking current sources, not re-reading the
+   same lapse/restoration fact):
+   - A new Phase II **"strategic breakthrough" funding vehicle, $30M
+     ceiling** — far above NIOSH's existing $1M Phase II cap already noted
+     above; worth knowing this larger tier exists even if it's not the
+     realistic near-term target.
+   - **Increased foreign-ownership/foreign-risk due diligence
+     requirements** — relevant to confirm Haven has no disqualifying
+     foreign ownership/financial ties before ever applying, not just an
+     abstract policy footnote.
+   - Agencies must now **cap how many proposals a single small business
+     can submit** (per fiscal year/solicitation/topic) — an operational
+     constraint worth knowing before planning a multi-topic application
+     strategy at any one agency.
