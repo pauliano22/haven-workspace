@@ -204,11 +204,24 @@ alone:
   regulated buckets" conclusion. Worth reading that doc directly rather
   than treating this note as a substitute for it.
 
-## What this doesn't resolve
+## Update: the active/electronic NRR-equivalent standard does exist — ANSI/ASA S12.68
 
-- The exact standard (if one exists) for NRR-equivalent labeling on an
-  *active/electronic* hearing protector, as opposed to a passive earplug
-  — flagged above, not found in this pass.
+Resolves the item directly below that was flagged as "not found in this pass."
+ANSI/ASA S12.68 ("Methods of Estimating Effective A-Weighted Sound Pressure
+Levels When Hearing Protectors Are Worn") explicitly covers active devices,
+not just passive earplugs: it specifies how to combine an active device's
+electronic attenuation contribution with its passive attenuation into a
+single rating (MIRE and REAT measurements summed), producing a two-number
+NRS_A rating (80th/20th percentile performance range) in place of the
+older single-number NRR. This is a real, existing, actually-applicable
+standard for Haven's product class — the open question from the first pass
+("does something like S3.19 but for active devices exist") has a yes
+answer, not an open one. Still worth real acoustics-consultant involvement
+to apply it correctly (test setup, percentile reporting, whether a
+DSP-based device needs anything beyond MIRE/REAT), but the standard itself
+isn't the missing piece anymore.
+
+## What this doesn't resolve
 - Whether tinnitus/hyperacusis sound-therapy apps (not hardware) have their
   own separate FDA digital-therapeutics pathway (some do, under different
   rules than hearing aids) wasn't researched here — a different question
