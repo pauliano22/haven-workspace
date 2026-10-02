@@ -1,5 +1,35 @@
 # Project status — start here
 
+## Update 2026-10-02: a real bug caught post-merge, and a real app-side safety fix reviewed
+
+Two more things since the last update, both real, both worth knowing before anything merges
+further:
+
+- **Found and fixed a serious bug in the already-merged TAC5301-Q1 driver**
+  (`haven-zephyr-app#18`, open). Following up on the two things the merged `#17` flagged as
+  "inferred, not confirmed," I fetched and read TI's own application note (SLAAEH6) on this
+  chip family's biquad filters. The coefficient encoding was wrong on 3 of 5 terms (missing a
+  negation and a /2 scaling that TI's note gives explicitly) — not a bug that would have errored,
+  one that would have quietly produced a filter with the wrong center frequency/Q/depth on a
+  device worn in someone's ear. Fixed, with a new test using hand-picked values that isolates
+  each term's treatment and would have caught the original mistake. Matching doc fix:
+  `haven-dev-board-kicad#13`. Both green, both ready to merge.
+- **Reviewed `haven-app#15`** (victorzhu443) **properly, not just read the description** — checked
+  out the branch, read `ComfortCheckIn.tsx`/`Tune.tsx` directly to independently verify the claimed
+  button semantics (my first pass misread it; the actual code settled it), reverted just
+  `useBandTuner.ts` to pre-fix master with the new regression test in place to confirm it fails
+  with the exact symptom claimed (writes `attenDb:6` instead of `q:6`), then ran the full suite on
+  the fix branch myself: 233/233 tests, `tsc` clean, matching the PR's own claim exactly. **Real,
+  correctly-diagnosed, correctly-fixed, safety-relevant** (the tolerance-pacing bug was speeding up
+  de-protection for someone who'd just said sounds still hurt) — recommend merging as-is.
+- **All 4 currently-open PRs across the org are reviewed and ready**: `haven-dev-board-kicad#11`
+  (the PCB redesign, genuinely not ready — still pending the bench test) is the one exception;
+  `#13`, `haven-zephyr-app#18`, and `haven-app#15` are all verified and waiting on a merge click.
+- Auto mode's own safety classifier blocks PR merges regardless of GitHub permissions or Bash
+  allow-list entries (a real, deliberate guardrail, confirmed by testing it directly) — so this
+  session queues verified work for a human merge rather than merging it, by design, while auto
+  mode is on.
+
 ## Update 2026-10-01/02: a second hardware track opened — the codec decision isn't as settled as it looked
 
 Since the previous update (below) declared the ADAU1860 board "ready to order, nothing
