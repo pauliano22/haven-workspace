@@ -32,6 +32,16 @@ occasionally get extensions) rather than just trusting the calculated
 date, but it's a genuinely good sign for this specific reference, not a
 present blocker.
 
+**Re-checked 2026-10-02, directly against the patent's own legal-status record
+(Google Patents), not re-derived from the original search**: still tracking
+exactly as expected — active, annuity fee paid for year 20 as of April 2026,
+no litigation flag. One clarifying detail the original research didn't
+narrow down: most European national designations (UK, France, Denmark, and
+others) lapsed for non-payment/translation reasons back in 2015-2018 — the
+patent is now only confirmed active in Germany specifically. Doesn't change
+the conclusion (still expiring Dec 18, 2026, still not a present blocker),
+just a sharper picture of where it was ever enforceable in the meantime.
+
 ### Eers Global Technologies Inc. — US10238546B2 — active through January 22, 2036
 
 **This one is the real signal worth paying attention to.** Assigned to
@@ -76,6 +86,36 @@ sells — but this does mean they're less likely to currently be a *direct
 market* competitor for Haven's specific consumer/musician positioning,
 even though their IP could still matter.
 
+**Two real, new, previously-unsurfaced findings, checked 2026-10-02 directly
+against the patent's own legal-events record (Google Patents) rather than
+re-running the original search:**
+
+1. **Cook Medical Holdings LLC recorded a security interest against this
+   patent on 2025-12-24.** Cook Medical is a large, real medical device
+   company — a security interest is a financing instrument (the patent
+   pledged as collateral, most likely for a loan to Eers), not necessarily
+   a sale or license, since the assignee of record is still listed as Eers
+   Global Technologies Inc. This doesn't by itself change the
+   infringement-risk picture, but it's a concrete signal that a much
+   larger, patent-experienced company now has a direct financial stake in
+   this specific patent being valuable/enforceable — worth knowing before
+   assuming this is a small, inactive academic spinout's dormant IP.
+2. **Google Patents flags this patent's family as having litigation**
+   ("Family has litigation," sourced from the Darts-ip global patent
+   litigation database) — a real flag, not a false positive I could
+   dismiss, but one I could not resolve to a specific case: no matching
+   result in CourtListener (US federal courts) or general web search for
+   "Eers Global Technologies" as a litigant. Darts-ip tracks litigation
+   globally, and the flag is on the patent *family* (which includes
+   non-US filings, e.g., a Canadian or PCT equivalent), so the likely
+   explanation is litigation outside the US that free sources don't
+   surface — but that's inference, not confirmation. **This is exactly
+   the kind of thing a real freedom-to-operate search (already flagged
+   below as needed) would resolve properly**; don't treat "no CourtListener
+   hit" as "no litigation," and don't treat the unresolved flag as "this is
+   definitely being actively enforced" either — it's a real open question,
+   not a known answer in either direction.
+
 ## Why this specific claim area matters for Haven
 
 Eers' patent personalizes based on **measured individual ear-canal
@@ -100,12 +140,26 @@ summary) to know whether it actually clears the patent's claims or not.
   by a patent professional would search patent classifications
   systematically, not just web-search keywords, and would find far more
   than two references.
-- Didn't check whether Eers Global Technologies has since built and
-  shipped an actual product, what it costs, or how it's positioned —
-  that's a real, separate competitor-research task this doc doesn't
-  complete.
+- ~~Didn't check whether Eers Global Technologies has since built and
+  shipped an actual product~~ Partially addressed above (2026-10-02 re-check
+  and the earlier follow-up): they appear to have moved to industrial/
+  medical-imaging markets, search-snippet confidence only, their own site
+  errored when checked directly. Current price point, if any, for a
+  consumer product is still not known — not fully closed.
 - Didn't check whether Haven's own approach (tinnitus-pitch-match-driven
   personalization, specifically) might itself be patentable — a real,
   separate, positive-direction question worth asking a patent attorney
   at the same time as the freedom-to-operate question, not just "are we
   infringing" in isolation.
+- **New, 2026-10-02**: the "family has litigation" flag on the Eers patent
+  is real but unresolved to a specific case — needs either a Darts-ip
+  subscription or a patent attorney's access to proper litigation databases
+  (PACER plus non-US equivalents) to actually identify what it refers to.
+  This is now probably the single highest-value next research step in this
+  doc, ahead of the general FTO search, since it's a specific, already-
+  flagged lead rather than a blind search.
+- Didn't investigate the nature or terms of Cook Medical's security
+  interest (loan amount, maturity, whether it signals Eers is financially
+  distressed or just doing normal venture debt) — UCC filing databases
+  (state-level, where Eers is incorporated) would have this, not Google
+  Patents.
