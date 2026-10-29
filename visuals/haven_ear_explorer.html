@@ -1,0 +1,1051 @@
+<meta charset="utf-8">
+<title>Haven In The Ear</title>
+<style>
+/* Layout: a header strip, then a two-column workbench (3D viewer left, control
+   panel right) that stacks at phone width. Palette borrows the audiogram's own
+   convention: right ear red, left ear blue, on a cool clinical grey. */
+:root {
+  --bg: #eef1f2;
+  --surface: #ffffff;
+  --surface-2: #e3e8ea;
+  --viewer: #dfe5e8;
+  --ink: #172126;
+  --ink-soft: #57666d;
+  --rule: #cdd5d8;
+  --right: #c4313b;
+  --right-bg: #f6dfe0;
+  --left: #2d5fa8;
+  --left-bg: #dde6f4;
+  --ok: #2c7a55;
+  --ok-bg: #dcefe4;
+  --warn: #8a6410;
+  --warn-bg: #f3e8cc;
+  --focus: #2d5fa8;
+  --font-body: 'Atkinson Hyperlegible', 'Segoe UI', sans-serif;
+  --font-mono: 'JetBrains Mono', 'Consolas', monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #12171a; --surface: #192024; --surface-2: #212a2f; --viewer: #0e1316;
+    --ink: #e6ecee; --ink-soft: #97a6ad; --rule: #2e383d;
+    --right: #ef6f76; --right-bg: #3a2124; --left: #7ea7e6; --left-bg: #1d2a3e;
+    --ok: #6fc79b; --ok-bg: #1c3328; --warn: #e1bf6a; --warn-bg: #352d19;
+    --focus: #7ea7e6; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #12171a; --surface: #192024; --surface-2: #212a2f; --viewer: #0e1316;
+  --ink: #e6ecee; --ink-soft: #97a6ad; --rule: #2e383d;
+  --right: #ef6f76; --right-bg: #3a2124; --left: #7ea7e6; --left-bg: #1d2a3e;
+  --ok: #6fc79b; --ok-bg: #1c3328; --warn: #e1bf6a; --warn-bg: #352d19;
+  --focus: #7ea7e6; color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--font-body); padding-inline: 16px; padding-block: 20px 32px; line-height: 1.5; }
+.wrap { max-width: 1240px; margin-inline: auto; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 18px; margin-bottom: 14px; }
+h1 { font-size: clamp(1.4rem, 3.4vw, 1.9rem); margin: 0; letter-spacing: -0.01em; }
+.eyebrow { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); }
+.dek { margin: 0; color: var(--ink-soft); max-width: 70ch; flex-basis: 100%; }
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) 360px; gap: 16px; align-items: start; }
+@media (max-width: 900px) { .bench { grid-template-columns: minmax(0, 1fr); } }
+.viewer { position: relative; background: var(--viewer); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; height: min(72vh, 680px); min-height: 380px; }
+.viewer canvas { display: block; width: 100%; height: 100%; touch-action: none; outline: none; }
+.viewer canvas:focus-visible { box-shadow: inset 0 0 0 3px var(--focus); }
+.hint { position: absolute; left: 12px; bottom: 10px; font-size: 0.78rem; color: var(--ink-soft); background: color-mix(in srgb, var(--surface) 82%, transparent); padding: 4px 9px; border-radius: 6px; pointer-events: none; max-width: calc(100% - 24px); }
+.overlay { position: absolute; inset: 0; pointer-events: none; }
+.overlay svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+.tag { position: absolute; transform: translate(-50%, -50%); font-family: var(--font-mono); font-size: 0.7rem; white-space: nowrap; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 5px; padding: 2px 6px; pointer-events: auto; cursor: pointer; }
+.tag.sel { border-color: var(--right); color: var(--right); }
+.tag.badge { background: var(--left-bg); color: var(--left); border-color: var(--left); }
+.tag.flat { transform: translate(0, -50%); }
+.panel { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 14px; display: grid; gap: 14px; min-width: 0; }
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; background: var(--surface-2); padding: 4px; border-radius: 8px; }
+.tabs button { font: inherit; font-size: 0.86rem; border: 0; background: transparent; color: var(--ink-soft); padding: 7px 4px; border-radius: 6px; cursor: pointer; }
+.tabs button[aria-selected="true"] { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,0.12); }
+button:focus-visible, input:focus-visible, .tag:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+h2 { font-size: 0.74rem; font-family: var(--font-mono); letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-soft); margin: 0 0 8px; font-weight: 500; }
+.toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 6px 10px; font-size: 0.88rem; }
+.toggles label { display: flex; gap: 7px; align-items: center; cursor: pointer; }
+.toggles input { accent-color: var(--left); width: 16px; height: 16px; }
+.slider { display: grid; gap: 4px; font-size: 0.88rem; }
+.slider input { width: 100%; accent-color: var(--right); }
+.row { display: flex; flex-wrap: wrap; gap: 6px; }
+.btn { font: inherit; font-size: 0.84rem; padding: 6px 11px; border-radius: 6px; border: 1px solid var(--rule); background: var(--surface-2); color: var(--ink); cursor: pointer; }
+.btn.primary { background: var(--ink); color: var(--surface); border-color: var(--ink); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+.parts { display: flex; flex-wrap: wrap; gap: 5px; }
+.parts button { font: inherit; font-size: 0.78rem; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--rule); background: var(--surface); color: var(--ink); cursor: pointer; }
+.parts button[aria-pressed="true"] { border-color: var(--right); background: var(--right-bg); color: var(--right); }
+.info { border-top: 1px solid var(--rule); padding-top: 12px; min-height: 120px; }
+.info h3 { margin: 0 0 2px; font-size: 1.05rem; }
+.info .pn { font-family: var(--font-mono); font-size: 0.78rem; color: var(--ink-soft); margin-bottom: 8px; }
+.info dl { display: grid; grid-template-columns: 4.6em 1fr; gap: 4px 10px; margin: 0; font-size: 0.88rem; }
+.info dt { color: var(--ink-soft); font-family: var(--font-mono); font-size: 0.72rem; padding-top: 3px; text-transform: uppercase; letter-spacing: 0.04em; }
+.info dd { margin: 0; }
+.chip { display: inline-block; font-family: var(--font-mono); font-size: 0.7rem; padding: 2px 8px; border-radius: 999px; }
+.chip.chosen, .chip.kept { background: var(--ok-bg); color: var(--ok); }
+.chip.pending { background: var(--warn-bg); color: var(--warn); }
+.chip.concept { background: var(--left-bg); color: var(--left); }
+.chip.anatomy { background: var(--surface-2); color: var(--ink-soft); }
+.step { display: grid; gap: 8px; }
+.step .count { font-family: var(--font-mono); font-size: 0.74rem; color: var(--right); }
+.step h3 { margin: 0; font-size: 1.1rem; }
+.step p { margin: 0; font-size: 0.92rem; }
+.note { font-size: 0.78rem; color: var(--ink-soft); margin: 0; }
+.legend { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 0.78rem; color: var(--ink-soft); }
+.legend span::before { content: ""; display: inline-block; width: 9px; height: 9px; border-radius: 2px; margin-right: 5px; vertical-align: -1px; background: var(--c); }
+[hidden] { display: none !important; }
+@media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+</style>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<div class="wrap">
+  <header>
+    <span class="eyebrow">Haven v2 · fit-study geometry · all sizes in mm</span>
+    <h1>Haven In The Ear</h1>
+    <p class="dek">The v2 earbud seated in an ear at true scale. Orbit it, pull it apart, tap any part to see what it is and whether it's chosen yet, or step through how sound gets from the room to your eardrum. The ear is sculpted from published anatomical dimensions (no openly licensed ear scan was available), so treat it as representative, not a scan of a real person.</p>
+  </header>
+
+  <div class="bench">
+    <div class="viewer" id="viewer">
+      <canvas id="c" tabindex="0" aria-label="3D view of the Haven v2 earbud in an ear. Use the part list to select parts with the keyboard."></canvas>
+      <div class="overlay" id="overlay"><svg id="lines" aria-hidden="true"></svg></div>
+      <div class="hint" id="hint">Drag to orbit · scroll or pinch to zoom · right-drag to pan · tap a part</div>
+    </div>
+
+    <div class="panel">
+      <div class="tabs" role="tablist" aria-label="View">
+        <button role="tab" id="tab-explore" aria-selected="true" aria-controls="pane-explore">Explore</button>
+        <button role="tab" id="tab-how" aria-selected="false" aria-controls="pane-how">How it works</button>
+        <button role="tab" id="tab-case" aria-selected="false" aria-controls="pane-case">Charging case</button>
+      </div>
+
+      <section id="pane-explore" role="tabpanel" aria-labelledby="tab-explore">
+        <h2>View</h2>
+        <div class="row" style="margin-bottom:10px">
+          <button class="btn" id="cam-side">Side cut-away</button>
+          <button class="btn" id="cam-out">Outside the ear</button>
+          <button class="btn" id="cam-close">Close-up</button>
+        </div>
+        <div class="toggles">
+          <label><input type="checkbox" id="t-ear" checked> Ear</label>
+          <label><input type="checkbox" id="t-cut"> Cut-away</label>
+          <label><input type="checkbox" id="t-skin"> See-through skin</label>
+          <label><input type="checkbox" id="t-shell" checked> See-through shell</label>
+          <label><input type="checkbox" id="t-labels"> Labels</label>
+          <label><input type="checkbox" id="t-scale" checked> 10 mm scale</label>
+          <label><input type="checkbox" id="t-v1"> v1 outline</label>
+          <label><input type="checkbox" id="t-coin"> US quarter</label>
+        </div>
+        <div class="slider" style="margin-top:12px">
+          <label for="explode">Pull apart: <span id="explode-val">0</span>%</label>
+          <input type="range" id="explode" min="0" max="100" value="0">
+        </div>
+        <div style="margin-top:12px">
+          <h2>Parts</h2>
+          <div class="parts" id="part-list"></div>
+        </div>
+      </section>
+
+      <section id="pane-how" role="tabpanel" aria-labelledby="tab-how" hidden>
+        <div class="step" aria-live="polite">
+          <span class="count" id="step-count"></span>
+          <h3 id="step-title"></h3>
+          <p id="step-body"></p>
+        </div>
+        <div class="row" style="margin-top:12px">
+          <button class="btn" id="step-back">Back</button>
+          <button class="btn primary" id="step-next">Next</button>
+        </div>
+      </section>
+
+      <section id="pane-case" role="tabpanel" aria-labelledby="tab-case" hidden>
+        <p class="note" style="margin-bottom:10px">Case envelope 53.5 × 45.5 × 25.5 mm. Buds lie on their charging-pad side over spring pins; magnets pull them into place. Paul chose a larger case battery (about 3 full recharges), so the real case will grow a few mm.</p>
+        <div class="row" style="margin-bottom:12px">
+          <button class="btn primary" id="lid">Close lid</button>
+          <button class="btn" id="cam-case">Reset view</button>
+        </div>
+        <h2>Parts</h2>
+        <div class="parts" id="case-list"></div>
+      </section>
+
+      <div class="info" id="info" aria-live="polite"></div>
+      <div class="legend">
+        <span style="--c:#4f7d5c">Board</span><span style="--c:#9aa1a7">Module / metal</span><span style="--c:#c99a2e">Gold pads</span><span style="--c:#c4313b">Selected / signal</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+(function () {
+  "use strict";
+  const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const viewer = document.getElementById("viewer");
+  const canvas = document.getElementById("c");
+  const overlay = document.getElementById("overlay");
+  const svg = document.getElementById("lines");
+  const V = (x, y, z) => new THREE.Vector3(x, y, z);
+
+  // ------------------------------------------------------------ renderer
+  const small = Math.min(window.innerWidth, window.innerHeight) < 700;
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, powerPreference: "high-performance" });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, small ? 1.5 : 1.75));
+  renderer.localClippingEnabled = true;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+  renderer.toneMapping = THREE.ACESFilmicToneMapping;
+  renderer.toneMappingExposure = 1.05;
+  renderer.physicallyCorrectLights = true;
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(35, 1, 0.3, 3000);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = !reduce;
+  controls.dampingFactor = 0.12;
+  controls.minDistance = 15;
+  controls.maxDistance = 400;
+  if (controls.listenToKeyEvents) controls.listenToKeyEvents(canvas);
+
+  const col = h => new THREE.Color(h).convertSRGBToLinear();
+
+  // procedural studio environment for reflections
+  (function env() {
+    const pm = new THREE.PMREMGenerator(renderer);
+    const es = new THREE.Scene();
+    const room = new THREE.Mesh(new THREE.BoxGeometry(100, 100, 100), new THREE.MeshBasicMaterial({ color: col(0x5c6266), side: THREE.BackSide }));
+    es.add(room);
+    const floor = new THREE.Mesh(new THREE.PlaneGeometry(100, 100), new THREE.MeshBasicMaterial({ color: col(0x2c3033) }));
+    floor.rotation.x = -Math.PI / 2; floor.position.y = -49; es.add(floor);
+    [[0, 49, 0, -Math.PI / 2, 0, 60, 30, 5.0], [-49, 10, 0, 0, Math.PI / 2, 30, 50, 2.2], [49, 15, 10, 0, -Math.PI / 2, 22, 40, 1.4], [0, 10, -49, 0, 0, 50, 18, 1.2]].forEach(([x, y, z, rx, ry, w, h, k]) => {
+      const p = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({ color: new THREE.Color(k, k, k), side: THREE.DoubleSide }));
+      p.position.set(x, y, z); p.rotation.set(rx, ry, 0); es.add(p);
+    });
+    scene.environment = pm.fromScene(es, 0.04).texture;
+    pm.dispose();
+  })();
+
+  scene.add(new THREE.HemisphereLight(0xf4f6f8, 0x6f6660, 0.9));
+  const sun = new THREE.DirectionalLight(0xfff4ea, 2.6);
+  sun.position.set(70, 90, 150);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(small ? 1024 : 2048, small ? 1024 : 2048);
+  Object.assign(sun.shadow.camera, { left: -70, right: 70, top: 70, bottom: -70, near: 10, far: 420 });
+  sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.25; sun.shadow.radius = 4;
+  scene.add(sun);
+  const rim = new THREE.DirectionalLight(0xdfe9ff, 0.9); rim.position.set(-120, -30, 40); scene.add(rim);
+
+  function readBg() {
+    const c = getComputedStyle(document.documentElement).getPropertyValue("--viewer").trim() || "#dfe5e8";
+    scene.background = col(c);
+  }
+  readBg();
+  window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", readBg);
+  new MutationObserver(readBg).observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
+
+  // ------------------------------------------------------------ helpers
+  const phys = (color, o = {}) => new THREE.MeshPhysicalMaterial(Object.assign({ color: col(color), roughness: 0.55, metalness: 0 }, o));
+  const mat = phys;
+  function canvasTex(w, h, draw, srgb = true) {
+    const c = document.createElement("canvas"); c.width = w; c.height = h;
+    draw(c.getContext("2d"), w, h);
+    const t = new THREE.CanvasTexture(c);
+    if (srgb) t.encoding = THREE.sRGBEncoding;
+    t.anisotropy = Math.min(8, renderer.capabilities.getMaxAnisotropy());
+    return t;
+  }
+  function rng(seed) { let s = seed >>> 0; return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296); }
+  function roundedRectShape(w, h, r) {
+    r = Math.max(0.05, Math.min(r, w / 2 - 0.01, h / 2 - 0.01));
+    const s = new THREE.Shape(), x = w / 2 - r, y = h / 2 - r;
+    s.moveTo(-x, -h / 2);
+    s.lineTo(x, -h / 2); s.absarc(x, -y, r, -Math.PI / 2, 0, false);
+    s.lineTo(w / 2, y); s.absarc(x, y, r, 0, Math.PI / 2, false);
+    s.lineTo(-x, h / 2); s.absarc(-x, y, r, Math.PI / 2, Math.PI, false);
+    s.lineTo(-w / 2, -y); s.absarc(-x, -y, r, Math.PI, 1.5 * Math.PI, false);
+    return s;
+  }
+  function roundedBox(w, d, h, rPlan, rEdge) {
+    const sh = roundedRectShape(w - 2 * rEdge, d - 2 * rEdge, Math.max(0.1, rPlan - rEdge));
+    const g = new THREE.ExtrudeGeometry(sh, { depth: h - 2 * rEdge, bevelEnabled: true, bevelThickness: rEdge, bevelSize: rEdge, bevelSegments: 8, curveSegments: 20 });
+    g.translate(0, 0, rEdge); g.computeVertexNormals();
+    return g;
+  }
+  function boxAt(sx, sy, sz, cx, cy, cz, m) {
+    const mesh = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), m);
+    mesh.position.set(cx, cy, cz); mesh.castShadow = true; mesh.receiveShadow = true;
+    return mesh;
+  }
+  function cylZ(d, h, cx, cy, z0, m, seg = 48) {
+    const g = new THREE.CylinderGeometry(d / 2, d / 2, h, seg); g.rotateX(Math.PI / 2);
+    const mesh = new THREE.Mesh(g, m); mesh.position.set(cx, cy, z0 + h / 2);
+    mesh.castShadow = true; mesh.receiveShadow = true;
+    return mesh;
+  }
+  function orientY(obj, axis) { obj.quaternion.setFromUnitVectors(V(0, 1, 0), axis.clone().normalize()); }
+
+  // ------------------------------------------------------------ textures
+  const TEX = {};
+  TEX.pcb = canvasTex(360, 520, (g, w, h) => {
+    g.fillStyle = "#1f5a37"; g.fillRect(0, 0, w, h);
+    const r = rng(7);
+    g.strokeStyle = "rgba(120,190,140,0.35)"; g.lineWidth = 3;            // traces under mask
+    for (let i = 0; i < 46; i++) { g.beginPath(); let x = r() * w, y = r() * h; g.moveTo(x, y); for (let k = 0; k < 3; k++) { r() < 0.5 ? (x += (r() - 0.5) * 160) : (y += (r() - 0.5) * 160); g.lineTo(x, y); } g.stroke(); }
+    g.fillStyle = "#d6a947";                                                 // gold pads
+    for (let i = 0; i < 70; i++) { const x = 20 + r() * (w - 40), y = 20 + r() * (h - 40); g.fillRect(x, y, 9, 15); }
+    for (let i = 0; i < 26; i++) { g.beginPath(); g.arc(18 + r() * (w - 36), 18 + r() * (h - 36), 5, 0, 7); g.fill(); }
+    g.fillStyle = "#eef2ee"; g.font = "bold 28px monospace"; g.fillText("HAVEN v2", 22, h - 26);
+    g.font = "18px monospace"; g.fillText("U1 RF", 30, 50); g.fillText("U2 CODEC", w - 140, 140); g.fillText("U3 PMIC", 40, h - 110); g.fillText("SWD", w - 70, h - 150);
+    g.strokeStyle = "#eef2ee"; g.lineWidth = 2; g.strokeRect(6, 6, w - 12, h - 12);
+  });
+  const chipTex = (lines, bg = "#17191b", fg = "rgba(205,210,214,0.85)") => canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = bg; g.fillRect(0, 0, w, h);
+    g.fillStyle = fg; g.textAlign = "center";
+    lines.forEach((t, i) => { g.font = (i === 0 ? "bold 40px" : "30px") + " monospace"; g.fillText(t, w / 2, 100 + i * 46); });
+    g.beginPath(); g.arc(30, 30, 10, 0, 7); g.fill();
+  });
+  TEX.codec = chipTex(["ADAU1860", "BCBZ", "#2638"]);
+  TEX.pmic = chipTex(["nPM1100", "QDAA"]);
+  TEX.module = canvasTex(320, 512, (g, w, h) => {
+    const gr = g.createLinearGradient(0, 0, w, h); gr.addColorStop(0, "#c9cdd1"); gr.addColorStop(1, "#aeb3b8");
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    const r = rng(3); g.strokeStyle = "rgba(255,255,255,0.08)";
+    for (let i = 0; i < 400; i++) { const y = r() * h; g.beginPath(); g.moveTo(0, y); g.lineTo(w, y + (r() - 0.5) * 4); g.stroke(); }
+    g.fillStyle = "#e9ebe6"; g.fillRect(34, 150, w - 68, 210);
+    g.fillStyle = "#2a2f33"; g.textAlign = "center";
+    g.font = "bold 36px sans-serif"; g.fillText("Raytac", w / 2, 210);
+    g.font = "bold 30px monospace"; g.fillText("MDBT53V-1M", w / 2, 260);
+    g.font = "24px monospace"; g.fillText("nRF5340", w / 2, 300); g.fillText("Bluetooth LE", w / 2, 335);
+  });
+  TEX.battery = canvasTex(256, 256, (g, w, h) => {
+    const gr = g.createRadialGradient(w / 2, h / 2, 10, w / 2, h / 2, w / 2); gr.addColorStop(0, "#d8dbde"); gr.addColorStop(1, "#a6abb0");
+    g.fillStyle = gr; g.fillRect(0, 0, w, h);
+    g.fillStyle = "#2b3a6b"; g.textAlign = "center"; g.font = "bold 34px sans-serif"; g.fillText("VARTA", w / 2, 108);
+    g.font = "26px monospace"; g.fillStyle = "#30353a"; g.fillText("CP 1254 A4", w / 2, 148); g.fillText("3.7V  +", w / 2, 184);
+  });
+  TEX.grille = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = "#3a4046"; g.fillRect(0, 0, w, h); g.fillStyle = "#15181b";
+    for (let y = 8; y < h; y += 14) for (let x = (y / 14 % 2) * 7 + 8; x < w; x += 14) { g.beginPath(); g.arc(x, y, 4.2, 0, 7); g.fill(); }
+  });
+  TEX.foamBump = canvasTex(256, 256, (g, w, h) => {
+    g.fillStyle = "#808080"; g.fillRect(0, 0, w, h); const r = rng(11);
+    for (let i = 0; i < 2600; i++) { const v = Math.floor(40 + r() * 80); g.fillStyle = `rgb(${v},${v},${v})`; g.beginPath(); g.arc(r() * w, r() * h, 0.8 + r() * 2.2, 0, 7); g.fill(); }
+  }, false);
+  TEX.foamBump.wrapS = TEX.foamBump.wrapT = THREE.RepeatWrapping; TEX.foamBump.repeat.set(3, 2);
+  TEX.skinBump = canvasTex(512, 512, (g, w, h) => {
+    g.fillStyle = "#808080"; g.fillRect(0, 0, w, h); const r = rng(5);
+    for (let i = 0; i < 9000; i++) { const v = Math.floor(110 + r() * 40); g.fillStyle = `rgba(${v},${v},${v},0.5)`; g.fillRect(r() * w, r() * h, 1.5, 1.5); }
+  }, false);
+  TEX.skinBump.wrapS = TEX.skinBump.wrapT = THREE.RepeatWrapping; TEX.skinBump.repeat.set(6, 6);
+
+  // ------------------------------------------------------------ part data
+  const PARTS = {
+    shell: { name: "Shell", pn: "Haven v2 shell (fit-study envelope, organic surface)", size: "Head 16.7 × 18.9 × 17.5; 23.5 tall with nozzle", role: "Holds everything. Resin SLA with 1.2 mm walls. No vent, so the ear tip can seal. Shown in clear resin so the parts read through it.", status: ["concept", "Shape follows the fit study; final styling once the parts freeze"] },
+    nozzle: { name: "Nozzle", pn: "Ø5.4 shaft · Ø6.2 lip · Ø3.0 bore · 15° tilt", size: "5.5 long", role: "Carries sound from the driver into the canal and holds a standard 4.5 mm-bore ear tip.", status: ["pending", "From published tip specs; measure a tip pack before freezing"] },
+    eartip: { name: "Foam ear tip", pn: "Off-the-shelf, 4.5 mm bore (S/M/L)", size: "~Ø9–11 compressed in the canal", role: "Seals the canal. Foam blocks 20–41 dB on its own: the 'good seal' that lets the electronics take up to ~3 ms.", status: ["chosen", "Standard part; ship S/M/L"] },
+    module: { name: "Bluetooth module", pn: "Raytac MDBT53V-1M (nRF5340)", size: "7.8 × 12.4 × 1.85", role: "Dual-core nRF5340 with a chip antenna. Runs Haven's firmware: talks to the phone app and writes filter settings into the codec.", status: ["chosen", "Chosen, not bought (DigiKey had 25 on Oct 29)"] },
+    codec: { name: "Audio codec", pn: "Analog Devices ADAU1860", size: "3.0 × 2.7 BGA, 0.35 mm pitch", role: "The audio brain: mic in → 5 notch/peak filters → limiter → output ceiling → speaker out, all inside this chip.", status: ["kept", "Kept from v1; driver written and tested, never run on hardware yet"] },
+    pmic: { name: "Charger / power", pn: "Nordic nPM1100", size: "2.1 × 2.1 WLCSP", role: "Charges the battery from the case pins and powers the board.", status: ["chosen", "Lead pick; not stocked at LCSC (would be supplied to the assembler)"] },
+    xtal: { name: "Crystals", pn: "24.576 MHz (codec) · 32.768 kHz (radio)", size: "2.0 × 1.6 and 1.6 × 1.0", role: "Timing references for the codec's audio clock and the radio's sleep clock.", status: ["kept", "Same values as v1"] },
+    passives: { name: "Passives", pn: "0201 capacitors and resistors, inductor", size: "Fit within a 1.0 mm layer under the board", role: "Decoupling, bias and the power converter's inductor.", status: ["pending", "Envelope only; a real placement must confirm they fit"] },
+    pcb: { name: "Main board", pn: "Haven v2 PCB, 6 layers", size: "9 × 13 × 0.8", role: "Connects everything: module on top, codec, charger and passives underneath.", status: ["pending", "Not designed yet; schematic is next"] },
+    swd: { name: "Programming pads", pn: "SWD test pads (4)", size: "Ø0.8", role: "Load and debug firmware. Earbuds have no USB port, so these replace v1's debug connector.", status: ["concept", "Planned"] },
+    mic: { name: "Outer microphone", pn: "Knowles SPH0641LU4H-1", size: "3.50 × 2.65 × 0.98", role: "Hears the room through a 0.8 mm port in the shell. Digital (PDM) output goes straight into the codec.", status: ["kept", "Kept from v1; needs a short flex to reach the board"] },
+    driver: { name: "Speaker", pn: "8 mm dynamic driver, 16–32 Ω", size: "Ø8.0 × 3.6", role: "Plays the filtered sound into the nozzle. The codec's output is rated for 16–32 Ω loads.", status: ["pending", "Real part still to source: no 16–32 Ω earbud driver at DigiKey/Mouser"] },
+    battery: { name: "Battery", pn: "VARTA CoinPower CP1254", size: "Ø12.1 × 5.4 · 60–77 mAh", role: "About 8–10 h of loud hear-through, ~20 h quiet. It's the widest part, so it sets the earbud's footprint.", status: ["chosen", "Chosen; small-quantity source still to find"] },
+    pads: { name: "Charging pads", pn: "2 gold pads, Ø1.6", size: "6.2 mm apart", role: "Touch the case's spring pins: power and ground (later also data).", status: ["concept", "Concept"] },
+    magnet: { name: "Magnet", pn: "N52 disc", size: "Ø3 × 2", role: "Snaps the bud onto the case pins.", status: ["concept", "Strength to be tested"] },
+    canal: { name: "Ear canal", pn: "Representative model", size: "~27 long; entrance 8.3 × 9.5; narrowest 5.7 × 9", role: "Published averages: canal 25–31 mm long, entrance 6–9 × 8.5–12.5 mm, isthmus ~5.7 × 9 mm, with two bends.", status: ["anatomy", "Not a scan"] },
+    eardrum: { name: "Eardrum", pn: "Tympanic membrane", size: "~7 × 9, sits at an angle", role: "Where the sound ends up. With a good seal, almost all of it comes through the nozzle, not around the tip.", status: ["anatomy", "Representative"] },
+    pinna: { name: "Outer ear", pn: "Sculpted from published anatomy", size: "~62 tall × 34 wide; concha ~23 × 26", role: "Helix, antihelix with its two crura, triangular fossa, concha, tragus, antitragus and lobule. The bud's head sits in the concha bowl and rides partly outside it; a fit test on real ears judges that.", status: ["anatomy", "Procedural model, not a scan"] },
+    caseshell: { name: "Case", pn: "Charging case concept", size: "53.5 × 45.5 × 25.5", role: "Holds both buds over spring pins; lid hinges at the back.", status: ["concept", "Will grow a few mm for the larger battery"] },
+    casebat: { name: "Case battery", pn: "LiPo pouch (larger than 502030)", size: "~30 × 20 × 5 shown", role: "Recharges both buds about 3 times (Paul's choice: bigger battery over a smaller case).", status: ["chosen", "Size to be set by the real cell"] },
+    casepcb: { name: "Case board", pn: "USB-C charger + 5 V boost + load switches", size: "25 × 20 × 1", role: "Charges the case battery from USB-C and feeds each bud through its pins. No processor needed for a charge-only first version.", status: ["concept", "IP5306 or TI BQ25619 + TPS22910A"] },
+    usbc: { name: "USB-C", pn: "Case charging port", size: "9.0 × 7.3 × 3.2", role: "The only port in the system. The buds charge through the case.", status: ["concept", "Concept"] },
+    pogo: { name: "Spring pins", pn: "2 pogo pins per bud", size: "Ø1.5 × 4", role: "Press against the bud's gold pads to charge it.", status: ["concept", "Concept"] }
+  };
+
+  // ------------------------------------------------------------ the bud
+  const S = { spkY: -2.05, zBot: -2.1, zTop: 15.35, cx: -0.125, cy: -0.8 };
+  const tilt = THREE.MathUtils.degToRad(15);
+  const NOZ_AXIS = V(0, Math.sin(tilt), -Math.cos(tilt));
+  const NOZ_BASE = V(0, S.spkY, S.zBot);
+  const pickables = [];
+  const partMeshes = {};
+  function reg(mesh, id) {
+    mesh.userData.part = id;
+    (partMeshes[id] = partMeshes[id] || []).push(mesh);
+    pickables.push(mesh);
+    return mesh;
+  }
+
+  // Organic shell: superellipse sections lofted along z, rounded head tapering to the nozzle.
+  // Stations hold every part with >= 0.4 mm air inside a 1.2 mm wall (fit-study envelope).
+  const STATIONS = [
+    // z,     cx,     cy,    a,    b
+    [-2.3, 0.0, -2.05, 2.9, 2.9],
+    [-1.7, 0.0, -2.05, 4.5, 4.5],
+    [-0.8, -0.04, -1.95, 6.3, 6.2],
+    [0.3, -0.09, -1.65, 7.7, 7.7],
+    [1.8, -0.12, -1.25, 8.3, 8.75],
+    [4.4, -0.125, -0.9, 8.38, 9.45],
+    [9.0, -0.125, -0.8, 8.38, 9.48],
+    [12.2, -0.12, -0.65, 8.1, 9.25],
+    [13.9, -0.1, -0.45, 7.15, 8.25],
+    [14.85, -0.1, -0.35, 5.3, 6.2],
+    [15.3, -0.1, -0.3, 2.2, 2.6]
+  ];
+  const SE_N = 2.7;
+  const stCurves = [1, 2, 3, 4].map(k => new THREE.SplineCurve(STATIONS.map(s => new THREE.Vector2(s[0], s[k]))));
+  function stationAt(z) {
+    const z0 = STATIONS[0][0], z1 = STATIONS[STATIONS.length - 1][0];
+    const t = Math.min(1, Math.max(0, (z - z0) / (z1 - z0)));
+    // SplineCurve is parameterised by arc length-ish; sample by z with a small search
+    const out = [];
+    stCurves.forEach(c => { let best = null, bd = 1e9; for (let i = 0; i <= 200; i++) { const p = c.getPoint(i / 200); const d = Math.abs(p.x - z); if (d < bd) { bd = d; best = p.y; } } out.push(best); });
+    return out; // cx, cy, a, b
+  }
+  function seXat(z, y, side) {   // shell surface x at height z and lateral y (side -1 = -x face)
+    const [cx, cy, a, b] = stationAt(z);
+    const u = Math.min(0.999, Math.abs(y - cy) / b);
+    return cx + side * a * Math.pow(1 - Math.pow(u, SE_N), 1 / SE_N);
+  }
+  function shellGeometry() {
+    const rings = 64, seg = 72, pos = [], idx = [];
+    const zA = STATIONS[0][0], zB = STATIONS[STATIONS.length - 1][0];
+    const samp = c => { const arr = []; for (let i = 0; i <= 400; i++) arr.push(c.getPoint(i / 400)); return arr; };
+    const tables = stCurves.map(samp);
+    const lookup = (k, z) => { const tb = tables[k]; let best = tb[0], bd = 1e9; for (const p of tb) { const d = Math.abs(p.x - z); if (d < bd) { bd = d; best = p; } } return best.y; };
+    for (let i = 0; i <= rings; i++) {
+      const tt = i / rings, z = zA + (zB - zA) * (0.5 - 0.5 * Math.cos(Math.PI * tt));   // denser near the ends
+      const cx = lookup(0, z), cy = lookup(1, z), a = lookup(2, z), b = lookup(3, z);
+      for (let j = 0; j <= seg; j++) {
+        const th = j / seg * Math.PI * 2, c = Math.cos(th), s = Math.sin(th);
+        const x = cx + a * Math.sign(c) * Math.pow(Math.abs(c), 2 / SE_N);
+        const y = cy + b * Math.sign(s) * Math.pow(Math.abs(s), 2 / SE_N);
+        pos.push(x, y, z);
+      }
+    }
+    const top = pos.length / 3; pos.push(STATIONS[STATIONS.length - 1][1], STATIONS[STATIONS.length - 1][2], zB + 0.05);
+    const bot = pos.length / 3; pos.push(0, S.spkY, zA - 0.05);
+    for (let i = 0; i < rings; i++) for (let j = 0; j < seg; j++) {
+      const a = i * (seg + 1) + j, b = (i + 1) * (seg + 1) + j;
+      idx.push(a, a + 1, b, b, a + 1, b + 1);
+    }
+    for (let j = 0; j < seg; j++) { const r0 = rings * (seg + 1) + j; idx.push(r0, r0 + 1, top); idx.push(bot, j + 1, j); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    return g;
+  }
+  const SHELL_GEO = shellGeometry();
+
+  function buildBud(shared) {
+    const g = new THREE.Group();
+    const items = {};
+    const add = (id, obj) => { g.add(obj); (items[id] = items[id] || []).push(obj); if (!shared) obj.traverse(o => { if (o.isMesh) reg(o, id); }); return obj; };
+
+    const resin = phys(0xe9ece8, { roughness: 0.32, clearcoat: 0.5, clearcoatRoughness: 0.25, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.2 });
+    const shell = new THREE.Mesh(SHELL_GEO, resin);
+    shell.renderOrder = 5; shell.castShadow = false;
+    add("shell", shell);
+
+    const resinSolid = phys(0xe6e9e5, { roughness: 0.38, clearcoat: 0.4, clearcoatRoughness: 0.3, side: THREE.DoubleSide });
+    const nozPts = [[1.5, -0.8], [3.2, -0.8], [2.7, 0.2], [2.7, 3.7], [3.1, 4.3], [3.1, 4.9], [2.7, 5.5], [1.5, 5.5]].map(p => new THREE.Vector2(p[0], p[1]));
+    const noz = new THREE.Mesh(new THREE.LatheGeometry(nozPts, 48), resinSolid);
+    noz.position.copy(NOZ_BASE); orientY(noz, NOZ_AXIS); noz.castShadow = true;
+    add("nozzle", noz);
+
+    const foam = phys(0x4b5156, { roughness: 1.0, bumpMap: TEX.foamBump, bumpScale: 0.06, sheen: col(0x2f3438), side: THREE.DoubleSide });
+    const tipPts = [[2.75, 0.8], [3.3, 0.95], [3.95, 1.7], [4.25, 3.0], [4.25, 4.6], [3.95, 5.8], [3.0, 6.55], [1.6, 6.6]].map(p => new THREE.Vector2(p[0], p[1]));
+    const tip = new THREE.Mesh(new THREE.LatheGeometry(tipPts, 56), foam);
+    tip.scale.set(1, 1, 1.16);
+    tip.position.copy(NOZ_BASE); orientY(tip, NOZ_AXIS); tip.castShadow = true;
+    add("eartip", tip);
+
+    // speaker: basket + grille on the nozzle side
+    const drv = new THREE.Group();
+    drv.add(cylZ(8.0, 3.6, 0, S.spkY, 0, phys(0x3f474f, { metalness: 0.9, roughness: 0.38 }), 56));
+    const gr = new THREE.Mesh(new THREE.CircleGeometry(3.4, 48), phys(0xffffff, { map: TEX.grille, metalness: 0.6, roughness: 0.45 }));
+    gr.position.set(0, S.spkY, -0.02); gr.rotation.x = Math.PI; drv.add(gr);
+    add("driver", drv);
+
+    const steel = phys(0xc6cace, { metalness: 1, roughness: 0.24 });
+    const bat = new THREE.Group();
+    bat.add(cylZ(12.1, 5.4, 0, S.spkY, 3.9, steel, 64));
+    const cap = new THREE.Mesh(new THREE.CircleGeometry(5.6, 64), phys(0xffffff, { map: TEX.battery, metalness: 0.85, roughness: 0.3 }));
+    cap.position.set(0, S.spkY, 9.31); bat.add(cap);
+    add("battery", bat);
+
+    const pcbM = phys(0xffffff, { map: TEX.pcb, roughness: 0.32, clearcoat: 0.7, clearcoatRoughness: 0.15 });
+    const pcbEdge = phys(0x23402c, { roughness: 0.6 });
+    add("pcb", boxAt(9.0, 13.0, 0.8, 0, 0, 11.0, [pcbEdge, pcbEdge, pcbEdge, pcbEdge, pcbM, pcbM]));
+
+    const can = phys(0xffffff, { map: TEX.module, metalness: 0.85, roughness: 0.32 });
+    const canSide = phys(0xb4b9be, { metalness: 0.9, roughness: 0.35 });
+    const modG = new THREE.Group();
+    modG.add(boxAt(7.8, 12.4, 1.85, 0, 0.3, 12.325, [canSide, canSide, canSide, canSide, can, canSide]));
+    add("module", modG);
+
+    const under = 10.6;
+    const epoxy = phys(0x1c1e20, { roughness: 0.5 });
+    const chip = (tex, sx, sy, h, x, y, id) => add(id, boxAt(sx, sy, h, x, y, under - h / 2, [epoxy, epoxy, epoxy, epoxy, epoxy, phys(0xffffff, { map: tex, roughness: 0.5 })]));
+    chip(TEX.codec, 3.0, 2.7, 0.6, 1.6, 2.4, "codec");
+    chip(TEX.pmic, 2.1, 2.1, 0.55, -2.3, -3.2, "pmic");
+    const xt = new THREE.Group();
+    const xm = phys(0xd0d4d8, { metalness: 1, roughness: 0.3 });
+    xt.add(boxAt(2.0, 1.6, 0.5, -2.4, 2.8, under - 0.25, xm), boxAt(1.6, 1.0, 0.5, 2.7, -3.6, under - 0.25, xm));
+    add("xtal", xt);
+    const pas = new THREE.Group();
+    const capM = phys(0x9b8160, { roughness: 0.55 }), resM = phys(0x202224, { roughness: 0.5 }), term = phys(0xd8dbde, { metalness: 1, roughness: 0.3 });
+    [[-0.4, 0.6], [0.6, -0.8], [-1.2, -1.4], [3.4, 0.4], [3.5, 3.9], [-3.4, 0.2], [-0.6, 4.8], [1.2, -5.2], [-3.3, -5.4], [0.2, -3.0], [3.0, -1.6], [-1.5, 5.6], [2.2, 5.6], [-3.6, 3.9]]
+      .forEach(([x, y], i) => {
+        const horiz = i % 3 === 0, L = 0.6, W = 0.3;
+        pas.add(boxAt(horiz ? L * 0.6 : W, horiz ? W : L * 0.6, 0.3, x, y, under - 0.15, i % 2 ? capM : resM));
+        [-1, 1].forEach(s => pas.add(boxAt(horiz ? 0.12 : W, horiz ? W : 0.12, 0.3, x + (horiz ? s * 0.24 : 0), y + (horiz ? 0 : s * 0.24), under - 0.15, term)));
+      });
+    pas.add(boxAt(1.0, 0.5, 0.6, -0.8, -5.0, under - 0.3, phys(0x2d3134, { roughness: 0.4 })));
+    add("passives", pas);
+
+    const gold = phys(0xd9a83c, { metalness: 1, roughness: 0.26 });
+    const swd = new THREE.Group();
+    [-1.8, -0.6, 0.6, 1.8].forEach(y => swd.add(cylZ(0.8, 0.04, 3.7, y - 4.6, under - 0.04, gold, 20)));
+    add("swd", swd);
+
+    const micG = new THREE.Group();
+    micG.add(boxAt(0.98, 3.5, 2.65, 5.29, -1.0, 11.0, [phys(0xc9ced2, { metalness: 0.9, roughness: 0.3 }), epoxy, epoxy, epoxy, epoxy, epoxy]));
+    const portX = seXat(11.0, -1.0, +1);
+    const port = new THREE.Mesh(new THREE.CircleGeometry(0.42, 24), phys(0x111214, { roughness: 0.9 }));
+    port.position.set(portX + 0.02, -1.0, 11.0); port.rotation.y = Math.PI / 2;
+    add("mic", micG);
+    add("shell", port);
+
+    const magM = phys(0x7c8288, { metalness: 1, roughness: 0.3 });
+    const mag = new THREE.Mesh(new THREE.CylinderGeometry(1.5, 1.5, 2.0, 32), magM);
+    mag.rotation.z = Math.PI / 2; mag.position.set(-5.35, S.spkY, 1.9); mag.castShadow = true;
+    add("magnet", mag);
+    const padG = new THREE.Group();
+    [-3.1, 3.1].forEach(dy => {
+      const x = seXat(1.9, S.spkY + dy, -1);
+      const p = new THREE.Mesh(new THREE.CylinderGeometry(0.8, 0.8, 0.14, 28), gold);
+      p.rotation.z = Math.PI / 2; p.position.set(x - 0.03, S.spkY + dy, 1.9); padG.add(p);
+    });
+    add("pads", padG);
+    g.traverse(o => { if (o.isMesh && o !== shell) { o.castShadow = true; o.receiveShadow = true; } });
+    return { group: g, items };
+  }
+
+  // ------------------------------------------------------------ the ear
+  const cutPlane = new THREE.Plane(V(-1, 0, 0), 0);   // removes x > 0
+  const skin = phys(0xd39d83, { roughness: 0.5, sheen: col(0x8a3f2e), clearcoat: 0.08, clearcoatRoughness: 0.55, emissive: col(0x3b1307), emissiveIntensity: 0.18, bumpMap: TEX.skinBump, bumpScale: 0.015, side: THREE.DoubleSide, transparent: true, opacity: 1 });
+  const skinDeep = phys(0xbf7767, { roughness: 0.45, sheen: col(0x8a2f26), clearcoat: 0.25, clearcoatRoughness: 0.4, emissive: col(0x40100a), emissiveIntensity: 0.22, side: THREE.DoubleSide, transparent: true, opacity: 1 });
+  const drumMat = phys(0xe6dacb, { roughness: 0.25, clearcoat: 0.6, transparent: true, opacity: 0.88, side: THREE.DoubleSide });
+  const earMats = [skin, skinDeep, drumMat];
+  const ear = new THREE.Group();
+
+  const canalCurve = new THREE.CatmullRomCurve3([V(0, -1.1, -3.9), V(0, -0.2, -8.5), V(1.8, 1.4, -14), V(1.2, -0.9, -20.5), V(-0.8, 0.4, -26.5), V(-1.4, 0.9, -29.5)]);
+  const canalRx = t => t < 0.55 ? 4.15 - (4.15 - 2.85) * (t / 0.55) : 2.85 + (3.5 - 2.85) * ((t - 0.55) / 0.45);
+  const canalRy = t => t < 0.55 ? 4.77 - (4.77 - 4.5) * (t / 0.55) : 4.5;
+  (function buildCanal() {
+    const segs = 110, rad = 40, pos = [], idx = [];
+    for (let i = 0; i <= segs; i++) {
+      const t = i / segs, p = canalCurve.getPointAt(t), T = canalCurve.getTangentAt(t);
+      const n1 = V(1, 0, 0).sub(T.clone().multiplyScalar(T.x)).normalize();
+      const n2 = T.clone().cross(n1).normalize();
+      const flare = 1 + 0.08 * Math.max(0, 1 - t / 0.05);
+      for (let j = 0; j <= rad; j++) {
+        const a = j / rad * Math.PI * 2;
+        const v = p.clone().add(n1.clone().multiplyScalar(Math.cos(a) * canalRx(t) * flare)).add(n2.clone().multiplyScalar(Math.sin(a) * canalRy(t) * flare));
+        pos.push(v.x, v.y, v.z);
+      }
+    }
+    for (let i = 0; i < segs; i++) for (let j = 0; j < rad; j++) { const a = i * (rad + 1) + j, b = (i + 1) * (rad + 1) + j; idx.push(a, b, a + 1, b, b + 1, a + 1); }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3)); g.setIndex(idx); g.computeVertexNormals();
+    const m = new THREE.Mesh(g, skinDeep); m.receiveShadow = true;
+    ear.add(reg(m, "canal"));
+    const end = canalCurve.getPointAt(1), Te = canalCurve.getTangentAt(1);
+    const drum = new THREE.Mesh(new THREE.CircleGeometry(1, 48), drumMat);
+    drum.scale.set(3.5, 4.5, 1); drum.position.copy(end);
+    drum.quaternion.setFromUnitVectors(V(0, 0, 1), Te); drum.rotateY(THREE.MathUtils.degToRad(35));
+    ear.add(reg(drum, "eardrum"));
+  })();
+
+  // Outer ear: a sculpted relief surface. Anatomical landmarks are polylines/blobs; height is
+  // built from smooth ridges and grooves around them, blended into a concha bowl that opens
+  // into the canal, then feathered into the side of the head.
+  (function buildPinna() {
+    const seg = (p, a, b) => { const abx = b[0] - a[0], aby = b[1] - a[1]; const t = Math.max(0, Math.min(1, ((p[0] - a[0]) * abx + (p[1] - a[1]) * aby) / (abx * abx + aby * aby))); return Math.hypot(p[0] - a[0] - t * abx, p[1] - a[1] - t * aby); };
+    const smoothPoly = (pts, n) => new THREE.CatmullRomCurve3(pts.map(p => V(p[0], p[1], 0))).getPoints(n).map(v => [v.x, v.y]);
+    const dPoly = (p, poly) => { let d = 1e9; for (let i = 0; i < poly.length - 1; i++) d = Math.min(d, seg(p, poly[i], poly[i + 1])); return d; };
+    const G = (d, s) => Math.exp(-(d * d) / (2 * s * s));
+    const ss = (e0, e1, x) => { const t = Math.min(1, Math.max(0, (x - e0) / (e1 - e0))); return t * t * (3 - 2 * t); };
+    const OUT = smoothPoly([[12, 13], [8, 24], [2, 33], [-6, 38], [-15, 37.5], [-22, 32], [-26.5, 22], [-27.5, 9], [-26.5, -3], [-24, -13], [-20.5, -21], [-16, -28], [-10, -33], [-4, -34.5], [1.5, -32], [4.5, -26], [7, -19], [11, -13], [14, -5], [14.5, 4], [12, 13]], 160);
+    const insideOut = p => { let c = false; for (let i = 0, j = OUT.length - 1; i < OUT.length; j = i++) { const [xi, yi] = OUT[i], [xj, yj] = OUT[j]; if (((yi > p[1]) !== (yj > p[1])) && (p[0] < (xj - xi) * (p[1] - yi) / (yj - yi) + xi)) c = !c; } return c; };
+    const HELIX = smoothPoly([[10.5, 15], [6.5, 23.5], [1.5, 31], [-6, 35.6], [-14.5, 35.2], [-20.5, 30], [-24.5, 21], [-25.4, 9], [-24.4, -3], [-21.8, -12.5], [-18.2, -19.5]], 90);
+    const SCAPHA = smoothPoly([[2.5, 26.5], [-4.5, 31.4], [-13.5, 31.2], [-19.4, 26], [-21.6, 16], [-21.6, 4], [-20, -6], [-17.4, -13]], 70);
+    const ANTI = smoothPoly([[-5.5, -15], [-11, -10.5], [-14.6, -2], [-15.4, 7], [-14, 13]], 50);
+    const CRUS_SUP = smoothPoly([[-14, 13], [-13.2, 21], [-10, 28.5]], 30);
+    const CRUS_INF = smoothPoly([[-14, 13], [-8, 17.2], [0, 19], [5.5, 18.4]], 30);
+    const CRUS_HELIX = smoothPoly([[12, 13.6], [7.5, 12.6], [4, 12.0]], 16);
+    const FOSSA = [-7, 23.5];
+    const ell = (x, y) => Math.hypot(x, (y + 1.1) / 1.15);
+    const prof = [[0, -4.7], [4.1, -4.65], [6.4, -3.85], [8.6, -2.5], [10.3, -0.6], [11.1, 1.8], [11.4, 4.6]];
+    const zBowl = r => { if (r >= 11.4) return 4.6; if (r <= 4.1) return -4.7; const u = (r - 4.1) / 7.3; return -4.7 + 9.3 * (0.55 * u * u + 0.45 * Math.pow(u, 12)); };
+    function height(x, y) {
+      const p = [x, y], r = ell(x, y);
+      // signed distance to the outline (negative inside)
+      const dO = dPoly(p, OUT), sd = insideOut(p) ? -dO : dO;
+      const m = ss(2.2, -0.8, sd);
+      const lift = 1.0 + 0.36 * Math.max(0, r - 11.4) - 0.12 * Math.max(0, y - 20) * 0.0;
+      let rel = 3.6 * G(dPoly(p, HELIX), 1.7) - 1.9 * G(dPoly(p, SCAPHA), 1.7)
+        + 2.5 * G(dPoly(p, ANTI), 1.9) + 1.9 * G(dPoly(p, CRUS_SUP), 1.5) + 1.4 * G(dPoly(p, CRUS_INF), 1.3)
+        - 1.8 * G(Math.hypot(x - FOSSA[0], (y - FOSSA[1]) * 0.8), 3.3)
+        + 1.6 * G(dPoly(p, CRUS_HELIX), 1.1)
+        + 5.2 * G(Math.hypot((x - 13.2) / 0.62, (y + 2.2) / 1.05), 2.4)       // tragus
+        + 3.4 * G(Math.hypot((x + 5.2) / 0.9, (y + 16.6) / 0.75), 2.3)        // antitragus
+        + 2.3 * G(Math.hypot((x + 8.5) / 1.1, (y + 27.5) / 0.9), 4.6)         // lobule
+        - 1.2 * G(Math.hypot(x - 5.5, y + 14.6), 1.8);                         // intertragic notch
+      const outer = 4.6 + m * (lift + rel);
+      const w = ss(10.9, 12.8, r);
+      return (1 - w) * zBowl(Math.min(r, 11.4)) + w * outer;
+    }
+    const X0 = -64, X1 = 52, Y0 = -62, Y1 = 64, step = small ? 0.6 : 0.42;
+    const nx = Math.round((X1 - X0) / step), ny = Math.round((Y1 - Y0) / step);
+    const pos = new Float32Array((nx + 1) * (ny + 1) * 3), uv = new Float32Array((nx + 1) * (ny + 1) * 2);
+    for (let j = 0; j <= ny; j++) for (let i = 0; i <= nx; i++) {
+      const x = X0 + i * step, y = Y0 + j * step, k = j * (nx + 1) + i;
+      pos[k * 3] = x; pos[k * 3 + 1] = y; pos[k * 3 + 2] = height(x, y);
+      uv[k * 2] = (x - X0) / 40; uv[k * 2 + 1] = (y - Y0) / 40;
+    }
+    const idx = [];
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) {
+      const a = j * (nx + 1) + i, b = a + 1, c = a + nx + 1, d = c + 1;
+      const cxm = X0 + (i + 0.5) * step, cym = Y0 + (j + 0.5) * step;
+      if (ell(cxm, cym) < 4.05) continue;                            // canal opening
+      if (Math.hypot(cxm + 6, cym - 2) > 56) continue;               // round edge of the head patch
+      idx.push(a, b, c, b, d, c);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+    g.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+    g.setIndex(idx); g.computeVertexNormals();
+    const mesh = new THREE.Mesh(g, skin); mesh.receiveShadow = true; mesh.castShadow = true;
+    ear.add(reg(mesh, "pinna"));
+    ear.userData.height = height;
+  })();
+
+  // Solid tissue in the cut plane (x = 0), shown only in cut-away: follows the skin surface on top,
+  // dives down the canal walls to the eardrum and back, and closes 40 mm deep.
+  const tissueMat = phys(0xd39a8a, { roughness: 0.85, sheen: col(0x8a4a3c), emissive: col(0x2a0d08), emissiveIntensity: 0.12, side: THREE.DoubleSide });
+  const tissue = (function () {
+    const h = ear.userData.height, pts = [];
+    const yTop = -1.1 + 4.77 * 1.05, yBot = -1.1 - 4.77 * 1.05;
+    for (let y = 58; y > yTop; y -= 0.4) pts.push([y, h(0.001, y)]);
+    const N = 60;
+    for (let i = 0; i <= N; i++) { const t = i / N, p = canalCurve.getPointAt(t); pts.push([p.y + canalRy(t), p.z]); }
+    for (let i = N; i >= 0; i--) { const t = i / N, p = canalCurve.getPointAt(t); pts.push([p.y - canalRy(t), p.z]); }
+    for (let y = yBot; y > -54; y -= 0.4) pts.push([y, h(0.001, y)]);
+    pts.push([-54, -40], [58, -40]);
+    const sh = new THREE.Shape(pts.map(p => new THREE.Vector2(p[0], p[1])));
+    const g = new THREE.ShapeGeometry(sh);
+    const a = g.attributes.position;
+    for (let i = 0; i < a.count; i++) { const u = a.getX(i), v = a.getY(i); a.setXYZ(i, -0.02, u, v); }
+    g.computeVertexNormals();
+    const m = new THREE.Mesh(g, tissueMat); m.renderOrder = 1;
+    ear.add(m);
+    return m;
+  })();
+  ear.traverse(o => { if (o.isMesh) o.renderOrder = 1; });
+
+  // ------------------------------------------------------------ scenes
+  const earRoot = new THREE.Group(); scene.add(earRoot);
+  earRoot.add(ear);
+  const bud = buildBud(false);
+  earRoot.add(bud.group);
+
+  const EXPLODE = { driver: V(0, 0, 3), battery: V(0, 0, 9), passives: V(0, 0, 17), codec: V(0, 0, 17), pmic: V(0, 0, 17), xtal: V(0, 0, 17), swd: V(0, 0, 21), pcb: V(0, 0, 21), module: V(0, 0, 27), mic: V(12, 0, 21) };
+  for (const id in bud.items) bud.items[id].forEach(o => { o.userData.base = o.position.clone(); });
+
+  const helpers = new THREE.Group(); earRoot.add(helpers);
+  const scaleBar = new THREE.Group();
+  const barMat = new THREE.MeshBasicMaterial({ color: col(0x172126) });
+  scaleBar.add(boxAt(0.5, 10, 0.5, 0, 0, 0, barMat), boxAt(2.5, 0.4, 0.5, 0, 5, 0, barMat), boxAt(2.5, 0.4, 0.5, 0, -5, 0, barMat));
+  scaleBar.traverse(o => { o.castShadow = false; });
+  scaleBar.position.set(14, 3, 19); helpers.add(scaleBar);
+  const v1 = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.BoxGeometry(16.6, 34.6, 21.2)), new THREE.LineDashedMaterial({ color: col(0x2d5fa8), dashSize: 1.2, gapSize: 0.8 }));
+  v1.computeLineDistances(); v1.position.set(S.cx, S.cy + 7.85, S.zBot + 10.6); v1.visible = false; helpers.add(v1);
+  const coin = new THREE.Group();
+  const coinM = new THREE.Mesh(new THREE.CylinderGeometry(12.13, 12.13, 1.75, 96), phys(0xc4c8cc, { metalness: 1, roughness: 0.3 }));
+  coinM.castShadow = true; coin.add(coinM); coin.rotation.z = Math.PI / 2; coin.position.set(26, -2, 8); coin.visible = false; helpers.add(coin);
+
+  const PHONE = V(70, 42, 48);
+  const bleLine = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0.3, 13.3), PHONE]), new THREE.LineDashedMaterial({ color: col(0x2d5fa8), dashSize: 2, gapSize: 1.5 }));
+  bleLine.computeLineDistances(); bleLine.visible = false; earRoot.add(bleLine);
+
+  // ------------------------------------------------------------ case scene
+  const caseRoot = new THREE.Group(); caseRoot.visible = false; scene.add(caseRoot);
+  const caseBuds = [];
+  (function buildCase() {
+    const W = 53.5, D = 45.5, H = 25.5, split = 15.3;
+    const cm = phys(0xf1f2ef, { roughness: 0.28, clearcoat: 0.6, clearcoatRoughness: 0.2, transparent: true, opacity: 0.24, depthWrite: false });
+    const base = new THREE.Mesh(roundedBox(W, D, split, 9, 3.5), cm);
+    base.renderOrder = 6; caseRoot.add(reg(base, "caseshell"));
+    const lidPivot = new THREE.Group(); lidPivot.position.set(0, D / 2, split); caseRoot.add(lidPivot);
+    const lid = new THREE.Mesh(roundedBox(W, D, H - split, 9, 3.5), cm.clone());
+    lid.position.set(0, -D / 2, 0); lid.renderOrder = 6; lidPivot.add(reg(lid, "caseshell"));
+    caseRoot.userData.lid = lidPivot;
+    const floorShadow = new THREE.Mesh(new THREE.PlaneGeometry(140, 120), new THREE.ShadowMaterial({ opacity: 0.18 }));
+    floorShadow.position.z = -0.05; floorShadow.receiveShadow = true; caseRoot.add(floorShadow);
+    [false, true].forEach(right => {
+      const b = buildBud(true);
+      b.items.eartip.forEach(o => { o.visible = false; });
+      b.items.shell[0].material.opacity = 0.42;
+      const holder = new THREE.Group();
+      b.group.rotation.y = -Math.PI / 2;
+      holder.add(b.group);
+      if (right) holder.rotation.z = Math.PI;
+      caseRoot.add(holder);
+      holder.updateMatrixWorld(true);
+      const bb = new THREE.Box3().setFromObject(b.items.shell[0]).expandByObject(b.items.nozzle[0]);
+      holder.position.x += right ? (1.0 - bb.min.x) : (-1.0 - bb.max.x);
+      holder.position.y += (-D / 2 + 2.3) - bb.min.y;
+      holder.position.z += 6.0 - bb.min.z;
+      holder.updateMatrixWorld(true);
+      caseBuds.push(holder);
+      b.items.pads[0].children.forEach(p => {
+        const w = new THREE.Vector3(); p.getWorldPosition(w);
+        caseRoot.add(reg(cylZ(1.5, 4.0, w.x, w.y, w.z - 4.3, phys(0xd9a83c, { metalness: 1, roughness: 0.26 }), 24), "pogo"));
+      });
+      const m = new THREE.Vector3(); b.items.magnet[0].getWorldPosition(m);
+      caseRoot.add(reg(cylZ(3, 2, m.x, m.y, 1.6, phys(0x7c8288, { metalness: 1, roughness: 0.3 }), 32), "magnet"));
+    });
+    caseRoot.add(reg(boxAt(30, 20, 5, 0, 9.45, 4.0, phys(0x9aa4ad, { metalness: 0.4, roughness: 0.35, clearcoat: 0.3 })), "casebat"));
+    const cpcb = phys(0xffffff, { map: TEX.pcb, roughness: 0.32, clearcoat: 0.7 }), cedge = phys(0x23402c, { roughness: 0.6 });
+    caseRoot.add(reg(boxAt(25, 20, 1, 0, 9.45, 7.5, [cedge, cedge, cedge, cedge, cpcb, cpcb]), "casepcb"));
+    caseRoot.add(reg(boxAt(9, 7.3, 3.2, 0, D / 2 - 3.2, 9.6, phys(0xc0c5ca, { metalness: 1, roughness: 0.3 })), "usbc"));
+  })();
+  caseRoot.rotation.x = -Math.PI / 2;   // case is modelled z-up; the viewer is y-up
+
+  // ------------------------------------------------------------ signal paths
+  const flow = new THREE.Group(); earRoot.add(flow);
+  const flowMat = new THREE.MeshBasicMaterial({ color: col(0xd8323d) });
+  const blockedMat = new THREE.MeshBasicMaterial({ color: col(0x8a949a) });
+  let flowCurve = null, flowDots = [], flowStatic = null;
+  function setFlow(points, blocked) {
+    flow.clear(); flowDots = []; flowCurve = null; flowStatic = null;
+    if (!points) return;
+    flowCurve = new THREE.CatmullRomCurve3(points.map(p => V(...p)));
+    const lm = new THREE.LineDashedMaterial({ color: blocked ? col(0x8a949a) : col(0xd8323d), dashSize: 1.2, gapSize: 0.9 });
+    flowStatic = new THREE.Line(new THREE.BufferGeometry().setFromPoints(flowCurve.getPoints(80)), lm);
+    flowStatic.computeLineDistances(); flow.add(flowStatic);
+    if (reduce) return;
+    for (let i = 0; i < 7; i++) {
+      const d = new THREE.Mesh(new THREE.SphereGeometry(0.55, 14, 10), blocked ? blockedMat : flowMat);
+      d.userData.phase = i / 7; flow.add(d); flowDots.push(d);
+    }
+    flow.userData.blocked = !!blocked;
+  }
+
+  const STEPS = [
+    { title: "Loud sound arrives", body: "A drum hit or a power tool reaches your ear. The foam tip and the sealed shell block 20–41 dB of it before any electronics get involved. That passive seal is what keeps the protection working even with the battery dead.", parts: ["eartip", "shell", "nozzle"], path: [[0, -6, 46], [0, -4, 30], [0, -2, 18], [0, -2, 16]], blocked: true, cam: "side" },
+    { title: "The outer mic listens", body: "A tiny digital microphone on the side of the bud hears the room through a 0.8 mm hole in the shell and sends the sound out as a digital (PDM) stream.", parts: ["mic"], path: [[38, -1, 16], [20, -1, 12.5], [8.4, -1, 11], [5.3, -1, 11]], cam: "close" },
+    { title: "The codec reshapes it", body: "Inside the ADAU1860, five notch or peak filters cut exactly the frequencies you set in the app, then a limiter and a hard output ceiling cap the level. All of it runs inside the chip, within the ~3 ms a good seal allows.", parts: ["codec", "xtal"], path: [[5.3, -1, 11], [4, 0.5, 10.6], [1.6, 2.4, 10.3]], cam: "close" },
+    { title: "The speaker plays it", body: "The codec drives the 8 mm speaker directly. Its output is rated for 16–32 Ω speakers, which is why v2 uses a small dynamic driver rather than a balanced armature.", parts: ["driver", "codec"], path: [[1.6, 2.4, 10.3], [4.6, 2, 7.5], [4.4, -1, 3.8], [0, -2.05, 1.8]], cam: "close" },
+    { title: "Into the sealed canal", body: "Sound leaves through the 3 mm nozzle bore, past the foam tip, down the canal's two bends to the eardrum. Because the tip seals, almost nothing leaks in around it to clash with the processed sound.", parts: ["nozzle", "eartip", "canal", "eardrum"], path: (() => { const pts = [[0, -2.05, 1.8], [0, -2.05, -2.1]]; const end = NOZ_BASE.clone().add(NOZ_AXIS.clone().multiplyScalar(5.5)); pts.push([end.x, end.y, end.z]); for (let t = 0.12; t <= 0.96; t += 0.12) { const p = canalCurve.getPointAt(t); pts.push([p.x, p.y, p.z]); } return pts; })(), cam: "side" },
+    { title: "Your phone sets the filters", body: "The nRF5340 module talks Bluetooth to the Haven app. The app runs the hearing tests and tinnitus matching, then sends the five filter bands and level limits, which the firmware writes into the codec.", parts: ["module"], path: null, ble: true, cam: "wide" },
+    { title: "Charging in the case", body: "No USB port on the bud: two gold pads touch spring pins in the case, a magnet pulls it into place, and the nPM1100 charges the coin cell. Open the Charging case tab to see it.", parts: ["pads", "magnet", "pmic", "battery"], path: null, cam: "pads" }
+  ];
+
+  // ------------------------------------------------------------ camera
+  const CAMS = {
+    side: { pos: V(118, 14, 22), target: V(0, 0, -6) },
+    out: { pos: V(30, 6, 150), target: V(-5, 2, 6) },
+    close: { pos: V(52, 18, 40), target: V(0, -1, 7) },
+    wide: { pos: V(150, 70, 120), target: V(20, 12, 15) },
+    pads: { pos: V(-62, -10, 26), target: V(-4, -2, 4) },
+    case: { pos: V(70, 78, 92), target: V(0, 9, 0) }
+  };
+  let camAnim = null;
+  function goCamNow(key) { const c = CAMS[key]; const fit = camera.aspect < 1.25 ? Math.min(2.2, 1.25 / Math.max(0.3, camera.aspect)) : 1; camera.position.copy(c.pos.clone().sub(c.target).multiplyScalar(fit).add(c.target)); controls.target.copy(c.target); controls.update(); }
+  function goCam(key, opts = {}) {
+    const c = CAMS[key]; if (!c) return;
+    const target = opts.target || c.target;
+    const fit = camera.aspect < 1.25 ? Math.min(2.2, 1.25 / Math.max(0.3, camera.aspect)) : 1;   // narrow screens: step back
+    const pos = (opts.pos || c.pos).clone().sub(target).multiplyScalar(fit).add(target);
+    if (reduce) { camera.position.copy(pos); controls.target.copy(target); controls.update(); return; }
+    camAnim = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: pos.clone(), t1: target.clone() };
+  }
+
+  // ------------------------------------------------------------ state + UI
+  const $ = id => document.getElementById(id);
+  const state = { mode: "explore", explode: 0, labels: false, selected: null, step: 0, lidOpen: true, cut: true };
+  function setCut(on) {
+    state.cut = on; $("t-cut").checked = on;
+    earMats.forEach(m => { m.clippingPlanes = on ? [cutPlane] : null; m.needsUpdate = true; });
+    syncEarClones();
+    tissue.visible = on;
+  }
+  function setSkin(see) {
+    [skin, skinDeep].forEach(m => { m.opacity = see ? 0.32 : 1; m.depthWrite = !see; m.needsUpdate = true; });
+    syncEarClones();
+  }
+  const shellMesh = bud.items.shell[0];
+  function setShell(see) { shellMesh.material.opacity = see ? 0.32 : 1; shellMesh.material.depthWrite = !see; shellMesh.material.needsUpdate = true; }
+
+  $("t-ear").addEventListener("change", e => { ear.visible = e.target.checked; });
+  $("t-cut").addEventListener("change", e => setCut(e.target.checked));
+  $("t-skin").addEventListener("change", e => setSkin(e.target.checked));
+  $("t-shell").addEventListener("change", e => setShell(e.target.checked));
+  $("t-labels").addEventListener("change", e => { state.labels = e.target.checked; });
+  $("t-scale").addEventListener("change", e => { scaleBar.visible = e.target.checked; });
+  $("t-v1").addEventListener("change", e => { v1.visible = e.target.checked; });
+  $("t-coin").addEventListener("change", e => { coin.visible = e.target.checked; });
+  $("explode").addEventListener("input", e => { state.explode = +e.target.value / 100; $("explode-val").textContent = e.target.value; applyExplode(); });
+  $("cam-side").addEventListener("click", () => { setCut(true); goCam("side"); });
+  $("cam-out").addEventListener("click", () => { setCut(false); goCam("out"); });
+  $("cam-close").addEventListener("click", () => goCam("close"));
+  $("cam-case").addEventListener("click", () => goCam("case"));
+
+  function applyExplode() {
+    const e = state.explode;
+    for (const id in EXPLODE) (bud.items[id] || []).forEach(o => o.position.copy(o.userData.base).add(EXPLODE[id].clone().multiplyScalar(e)));
+    if ($("t-shell").checked) shellMesh.material.opacity = 0.32 * (1 - 0.6 * e);
+  }
+
+  // part lists
+  const EAR_LIST = ["shell", "nozzle", "eartip", "module", "pcb", "codec", "pmic", "xtal", "passives", "swd", "mic", "driver", "battery", "pads", "magnet", "canal", "eardrum", "pinna"];
+  const CASE_LIST = ["caseshell", "casebat", "casepcb", "usbc", "pogo", "magnet"];
+  function fillList(el, ids) {
+    ids.forEach(id => {
+      const b = document.createElement("button");
+      b.type = "button"; b.textContent = PARTS[id].name; b.dataset.part = id; b.setAttribute("aria-pressed", "false");
+      b.addEventListener("click", () => select(id, true));
+      el.appendChild(b);
+    });
+  }
+  fillList($("part-list"), EAR_LIST); fillList($("case-list"), CASE_LIST);
+
+  const HIGHLIGHT = col(0xc4313b);
+  function setGlow(id, on) {
+    (partMeshes[id] || []).forEach(m => {
+      if (!m.userData.ownMat) {
+        m.material = Array.isArray(m.material) ? m.material.map(x => x.clone()) : m.material.clone();
+        m.userData.ownMat = true;
+        (Array.isArray(m.material) ? m.material : [m.material]).forEach(x => { x.userData.e0 = x.emissive ? x.emissive.clone() : null; x.userData.ei0 = x.emissiveIntensity; });
+      }
+      (Array.isArray(m.material) ? m.material : [m.material]).forEach(x => {
+        if (!x.emissive) return;
+        if (on) { x.emissive.copy(HIGHLIGHT); x.emissiveIntensity = 0.5; }
+        else { x.emissive.copy(x.userData.e0); x.emissiveIntensity = x.userData.ei0; }
+      });
+    });
+  }
+  // keep cloned ear materials in sync with toggles
+  function syncEarClones() {
+    ["canal", "eardrum", "pinna"].forEach(id => (partMeshes[id] || []).forEach(m => {
+      if (!m.userData.ownMat) return;
+      const src = id === "eardrum" ? drumMat : id === "canal" ? skinDeep : skin;
+      m.material.opacity = src.opacity; m.material.depthWrite = src.depthWrite; m.material.clippingPlanes = src.clippingPlanes; m.material.needsUpdate = true;
+    }));
+  }
+  let glowing = [];
+  function glowOnly(ids) { glowing.forEach(id => setGlow(id, false)); glowing = ids.slice(); glowing.forEach(id => setGlow(id, true)); syncEarClones(); }
+
+  function chip(s) { return `<span class="chip ${s[0]}">${s[1]}</span>`; }
+  function showInfo(id) {
+    const p = PARTS[id];
+    if (!p) { $("info").innerHTML = `<h3>Tap a part</h3><p class="note">Or pick one from the list. Each part shows its real part number, size and whether it's been chosen yet.</p>`; return; }
+    $("info").innerHTML = `<h3>${p.name}</h3><div class="pn">${p.pn}</div><dl><dt>Size</dt><dd>${p.size} mm</dd><dt>Job</dt><dd>${p.role}</dd><dt>Status</dt><dd>${chip(p.status)}</dd></dl>`;
+  }
+  function select(id, focus) {
+    state.selected = id;
+    document.querySelectorAll(".parts button").forEach(b => b.setAttribute("aria-pressed", b.dataset.part === id ? "true" : "false"));
+    glowOnly(id ? [id] : []);
+    showInfo(id);
+    if (focus && id && partMeshes[id]) {
+      const box = new THREE.Box3();
+      partMeshes[id].forEach(m => { if (m.visible && isShown(m)) box.expandByObject(m); });
+      if (!box.isEmpty()) {
+        const c = box.getCenter(new THREE.Vector3());
+        const off = camera.position.clone().sub(controls.target);
+        if (reduce) { controls.target.copy(c); camera.position.copy(c.clone().add(off)); }
+        else camAnim = { t: 0, p0: camera.position.clone(), t0: controls.target.clone(), p1: c.clone().add(off), t1: c };
+      }
+    }
+  }
+  function isShown(o) { while (o) { if (!o.visible) return false; o = o.parent; } return true; }
+
+  // picking
+  const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
+  let down = null;
+  canvas.addEventListener("pointerdown", e => { down = [e.clientX, e.clientY]; });
+  canvas.addEventListener("pointerup", e => {
+    if (!down || Math.hypot(e.clientX - down[0], e.clientY - down[1]) > 5) return;
+    const r = canvas.getBoundingClientRect();
+    ndc.set((e.clientX - r.left) / r.width * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+    ray.setFromCamera(ndc, camera);
+    const hits = ray.intersectObjects(pickables.filter(isShown), false).filter(h => {
+      const m = h.object.material; if (m.clippingPlanes && m.clippingPlanes.length && h.point.x > 0) return false;
+      return true;
+    });
+    // prefer an inner part over the see-through shell / case
+    const inner = hits.find(h => !["shell", "caseshell"].includes(h.object.userData.part) || !h.object.material.transparent || h.object.material.opacity > 0.5);
+    const best = inner || hits[0];
+    select(best ? best.object.userData.part : null, false);
+  });
+
+  // tabs
+  const tabs = ["explore", "how", "case"];
+  tabs.forEach(t => $("tab-" + t).addEventListener("click", () => setMode(t)));
+  document.querySelector(".tabs").addEventListener("keydown", e => {
+    if (!["ArrowLeft", "ArrowRight"].includes(e.key)) return;
+    const i = tabs.indexOf(state.mode), n = (i + (e.key === "ArrowRight" ? 1 : 2)) % 3;
+    setMode(tabs[n]); $("tab-" + tabs[n]).focus();
+  });
+  function setMode(m) {
+    state.mode = m;
+    tabs.forEach(t => { $("tab-" + t).setAttribute("aria-selected", t === m ? "true" : "false"); $("pane-" + t).hidden = t !== m; $("tab-" + t).tabIndex = t === m ? 0 : -1; });
+    earRoot.visible = m !== "case"; caseRoot.visible = m === "case";
+    if (m !== "how") { setFlow(null); bleLine.visible = false; }
+    if (m === "how") { if (state.explode) { $("explode").value = 0; $("explode").dispatchEvent(new Event("input")); } renderStep(); }
+    else if (m === "case") { select(null); goCam("case"); }
+    else { select(state.selected && EAR_LIST.includes(state.selected) ? state.selected : null); goCam("side"); setCut(true); }
+  }
+
+  function renderStep() {
+    const s = STEPS[state.step];
+    $("step-count").textContent = `Step ${state.step + 1} of ${STEPS.length}`;
+    $("step-title").textContent = s.title; $("step-body").textContent = s.body;
+    $("step-back").disabled = state.step === 0;
+    $("step-next").textContent = state.step === STEPS.length - 1 ? "Start over" : "Next";
+    setFlow(s.path, s.blocked);
+    bleLine.visible = !!s.ble;
+    glowOnly(s.parts);
+    showInfo(s.parts[0]);
+    document.querySelectorAll(".parts button").forEach(b => b.setAttribute("aria-pressed", "false"));
+    if (s.cam === "side") setCut(true);
+    if (s.cam === "close" || s.cam === "pads") setCut(false);
+    if (s.cam === "wide") setCut(true);
+    goCam(s.cam);
+  }
+  $("step-next").addEventListener("click", () => { state.step = (state.step + 1) % STEPS.length; renderStep(); });
+  $("step-back").addEventListener("click", () => { state.step = Math.max(0, state.step - 1); renderStep(); });
+
+  $("lid").addEventListener("click", () => {
+    state.lidOpen = !state.lidOpen;
+    $("lid").textContent = state.lidOpen ? "Close lid" : "Open lid";
+    lidTarget = state.lidOpen ? -1.95 : 0;
+    if (reduce) caseRoot.userData.lid.rotation.x = lidTarget;
+  });
+  let lidTarget = -1.95; caseRoot.userData.lid.rotation.x = lidTarget;
+
+  // ------------------------------------------------------------ labels overlay
+  const tagEls = {};
+  function tag(key, text, cls, onClick) {
+    let el = tagEls[key];
+    if (!el) {
+      el = document.createElement("button"); el.type = "button"; el.className = "tag " + (cls || ""); el.textContent = text;
+      if (onClick) el.addEventListener("click", onClick); else el.tabIndex = -1;
+      overlay.appendChild(el); tagEls[key] = el;
+    }
+    return el;
+  }
+  const scaleTag = tag("scale", "10 mm", "flat");
+  const phoneTag = tag("phone", "Phone app", "badge");
+  const v1Tag = tag("v1", "v1 shell 16.6 × 34.6 × 21.2", "flat");
+  const coinTag = tag("coin", "US quarter Ø24.3", "flat");
+  const sealTag = tag("seal", "−20 to −41 dB", "flat");
+  function project(v) {
+    const p = v.clone().project(camera);
+    const r = viewer.getBoundingClientRect();
+    return { x: (p.x + 1) / 2 * r.width, y: (1 - p.y) / 2 * r.height, front: p.z < 1 };
+  }
+  function place(el, v, show, dx = 0, dy = 0) {
+    if (!show) { el.style.display = "none"; return; }
+    const p = project(v); el.style.display = p.front ? "" : "none"; el.style.left = (p.x + dx) + "px"; el.style.top = (p.y + dy) + "px";
+  }
+  const LABEL_IDS = ["module", "pcb", "codec", "pmic", "passives", "battery", "driver", "mic", "nozzle", "eartip", "magnet", "pads"];
+  function updateLabels() {
+    const rect = viewer.getBoundingClientRect();
+    place(scaleTag, scaleBar.getWorldPosition(new THREE.Vector3()).add(V(0, 0, 0)), earRoot.visible && scaleBar.visible, 14, 0);
+    place(phoneTag, PHONE, earRoot.visible && bleLine.visible);
+    place(v1Tag, V(S.cx + 8.3, S.cy + 25.2, S.zBot + 21.2), earRoot.visible && v1.visible, 6, 0);
+    place(coinTag, V(26, -2, 21), earRoot.visible && coin.visible, -40, 0);
+    place(sealTag, V(0, -2, 20), state.mode === "how" && state.step === 0 && earRoot.visible, 10, 0);
+    let lines = "";
+    const show = earRoot.visible && state.mode === "explore" && (state.labels || state.explode > 0.25);
+    const entries = [];
+    LABEL_IDS.forEach(id => {
+      const el = tag("p-" + id, PARTS[id].name, "", () => select(id, false));
+      el.classList.toggle("sel", state.selected === id);
+      if (!show) { el.style.display = "none"; return; }
+      const box = new THREE.Box3(); (bud.items[id] || []).forEach(o => box.expandByObject(o));
+      const p = project(box.getCenter(new THREE.Vector3()));
+      entries.push({ id, el, p });
+    });
+    if (show) {
+      const left = entries.filter(e => e.p.x < rect.width / 2).sort((a, b) => a.p.y - b.p.y);
+      const right = entries.filter(e => e.p.x >= rect.width / 2).sort((a, b) => a.p.y - b.p.y);
+      const col = (list, x, alignRight) => {
+        let y = 18;
+        list.forEach(e => {
+          y = Math.max(y, Math.min(e.p.y, rect.height - 14)); const ly = y; y += 24;
+          e.el.style.display = ""; e.el.classList.add("flat");
+          const w = e.el.offsetWidth;
+          const lx = alignRight ? x - w : x;
+          e.el.style.left = lx + "px"; e.el.style.top = ly + "px";
+          const ex = alignRight ? x - w : x + w;
+          lines += `<line x1="${alignRight ? lx : lx + w}" y1="${ly}" x2="${e.p.x}" y2="${e.p.y}" stroke="currentColor" stroke-width="1" opacity="0.55"/><circle cx="${e.p.x}" cy="${e.p.y}" r="2.5" fill="currentColor"/>`;
+        });
+      };
+      col(left, 10, false); col(right, rect.width - 10, true);
+    }
+    svg.innerHTML = lines; svg.style.color = getComputedStyle(document.documentElement).getPropertyValue("--ink-soft");
+  }
+
+  // ------------------------------------------------------------ loop
+  function resize() {
+    const r = viewer.getBoundingClientRect();
+    renderer.setSize(r.width, r.height, false);
+    camera.aspect = r.width / Math.max(1, r.height); camera.updateProjectionMatrix();
+  }
+  new ResizeObserver(resize).observe(viewer);
+  resize();
+
+  const clock = new THREE.Clock();
+  const ease = t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+  function tick() {
+    const dt = Math.min(clock.getDelta(), 0.05);
+    if (camAnim) {
+      camAnim.t = Math.min(1, camAnim.t + dt / 0.9); const k = ease(camAnim.t);
+      camera.position.lerpVectors(camAnim.p0, camAnim.p1, k); controls.target.lerpVectors(camAnim.t0, camAnim.t1, k);
+      if (camAnim.t >= 1) camAnim = null;
+    }
+    const lid = caseRoot.userData.lid;
+    if (!reduce) lid.rotation.x += (lidTarget - lid.rotation.x) * Math.min(1, dt * 6);
+    if (flowCurve && flowDots.length) {
+      const now = performance.now() / 1000;
+      flowDots.forEach(d => {
+        let u = (now * 0.32 + d.userData.phase) % 1;
+        if (flow.userData.blocked) { d.visible = true; d.scale.setScalar(1 - Math.max(0, u - 0.75) * 3.2); }
+        d.position.copy(flowCurve.getPointAt(u));
+      });
+    }
+    controls.update();
+    renderer.render(scene, camera);
+    updateLabels();
+    requestAnimationFrame(tick);
+  }
+
+  // initial state: ear visible from outside, bud inserted
+  setCut(false);
+  goCamNow("out");
+  showInfo(null);
+  tick();
+})();
+</script>
