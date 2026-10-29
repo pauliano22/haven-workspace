@@ -1,7 +1,10 @@
-# Rev B: compact earbud + charging case
+# Haven v2: compact earbud + charging case
 
-Started 2026-10-29. Rev A (OpenEarable's native board, trimmed; `haven-dev-board-kicad#15`) is
-parked until its Bluetooth module and charger are back in stock. Rev B is a new, smaller board
+Naming (Paul, 2026-10-29): **v1** = the trimmed OpenEarable board (earlier called "Rev A"),
+**v2** = this compact bud + case (earlier "Rev B"). Branch and PR names keep the old labels.
+
+Started 2026-10-29. v1 (OpenEarable's native board, trimmed; `haven-dev-board-kicad#15`) is
+parked until its Bluetooth module and charger are back in stock. v2 is a new, smaller board
 and a charging case. Status and decisions also live in `PROJECT_STATUS.md`.
 
 ## Goals (working assumptions, Paul can change these)
