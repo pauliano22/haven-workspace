@@ -57,6 +57,11 @@ Packaging models with real part envelopes; all interference checks pass. Preview
 - Charging pads/magnet sit beside the speaker and the mic stands beside the board; both need a
   short flex or spring contact. The shell is a rounded block for now; the nicer v3 surface comes later.
 
+## Decisions (Paul, 2026-10-29)
+- Module: Raytac MDBT53V-1M is the lead. Don't buy now; wait for stock when it's time to order.
+- Speaker: 8 mm, 16–32 Ω dynamic driver (more output headroom; only 0.6 mm taller than 6 mm).
+- Case: size doesn't matter; use a larger case battery (~3 full recharges of both buds).
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
