@@ -1,5 +1,51 @@
 # Project status — start here
 
+## Update 2026-10-28: direction reset. Earbud board next, no bench board.
+
+A full project review (firmware, hardware, app, business) plus new research changed the plan.
+Everything below this section is history; where it conflicts with this section, this wins.
+
+**Where things actually stand.** Lots of software exists (app, ~510 firmware host tests, ADAU1860
+and TAC5301 drivers), but no audio has ever passed through Haven electronics, no board has been
+fabricated, the app has never run on a phone, and there have been no user conversations.
+
+**Decisions (Paul, 2026-10-28):**
+- **Don't order the 5× bench board** (`haven-dev-board-kicad` master). It is OpenEarable's earbud
+  board scaled 5× (160.9 × 72.9 mm vs 14.58 × 32.18 mm), can never become an earbud, and costs
+  about as much as the real earbud board (~$500 / 5 on the advanced tier, for the ADAU1860).
+- **Rev A = OpenEarable main 2.0 at native size, deletions only**, keeping the ADAU1860 (proven,
+  driver done). Remove: microSD (CARD1) + level shifter (U10), flash (U14), IMU (U1), fuel gauge
+  (U6; its 10 mΩ sense resistor R21 becomes a 0 Ω link), the flex board and its Hirose connector
+  (CN1, 112-week lead time), and the Samtec debug connector (J1 → Tag-Connect pads). Only the far
+  end can be trimmed, since the removed parts are scattered: ~14.6 × 28 mm. Shell: OpenEarable's
+  enclosure plus a nozzle for standard tips. Edit in KiCad (recovered 1× port, schematic metadata
+  repaired) so changes can be checked automatically. Get a real quote before ordering.
+- **Rev B = compact board (~14.6 × 22–24 mm) with a charging case**, designed while Rev A is
+  fabricated. USB-C is replaced by case contacts (pogo pins). Uses the v3 earbud shape.
+- **TAC5301 track parked** as a possible Rev B+ cost-down (`haven-dev-board-kicad#11` stays
+  unmerged). The breadboard parts at Paul's home are only needed if it comes back.
+- **Rule: no purchases until the design decision they serve has been made.**
+
+**Latency requirement relaxed.** `dsp_tuning/latency_comb_model/`: the 300 µs target assumed the
+leaked and processed sound arrive at equal level. With a good seal (foam-plug class, 20–41 dB)
+about 3 ms is fine; a mediocre seal pulls it back under 1 ms; a vented fit fails. The seal is now
+a design requirement on par with the codec.
+
+**Seal spec (for the shell work):** foam tips first (best low-frequency seal), triple-flange
+silicone as the washable alternative. One nozzle size for every body size: ~5.4 mm OD, 5–6 mm
+long, 0.3–0.5 mm retaining lip (fits 4.5 mm-bore tips such as SpinFit CP145 / NEO). No vent
+(a 1.4 mm vent costs ~4–6 dB at 250 Hz). Nozzle angled forward/up, small concha fin. Ship S/M/L
+tips. An inner-mic fit test is a Rev B+ idea; check the Eers patent (US10238546B2, to 2036) first.
+The existing S/M/L fit-test prints wrongly scale the nozzle with the body.
+
+**Corrections found in the review:** the `.epro` files are EasyEDA Pro, not Altium; Cornell RPL's
+free printing is for project teams and MAE classes, possibly not a personal project; "12.9 µs"
+for the ADAU1860 is a datasheet/upstream figure, not a Haven measurement; the local build uses
+`~/ncs/.venv` (see `~/CLAUDE.md`).
+
+**Also done today:** `haven-zephyr-app#22` and `#23` (victorzhu443) merged; `#24` (TAC5301 bench
+build target) open and green on all 5 CI builds.
+
 ## Update 2026-10-02: a real bug caught post-merge, and a real app-side safety fix reviewed
 
 Two more things since the last update, both real, both worth knowing before anything merges
@@ -80,6 +126,21 @@ that was skipped:
 **Not decided by me — this is exactly the kind of call that's yours.** Both branches are in a
 real, documented, non-misleading state now; neither is blocked on cleanup work, only on an actual
 decision (and, for Path B, a cheap bench experiment) whenever you have bandwidth for it.
+
+## Update 2026-09-30 (later): all six PRs from the stretch below are now merged
+
+`haven-app#10`, `#11`, `#12`, `#13`, `#14` and `haven-dev-board-kicad#9` are
+all merged, `haven-app#9` closed as superseded. `#11` and `#12` needed a
+second conflict-resolution pass after `#14` landed (both touched
+`Hearing.tsx`/`docs/roadmap.md`) — resolved by keeping both features'
+render blocks/roadmap entries side by side where they were genuinely
+independent. `#12` also had three real add/add conflicts
+(`insights.ts`, `insights.test.ts`, `docs/llm-summary.md`) because its
+branch point predated `#11`'s merge of the same feature — master's version
+was a strict superset in every case (added `hasRealData`, the deployed
+relay writeup), so master's content won outright rather than being
+concatenated. `tsc`/`jest` and CI green on every merge. No open PRs
+remain in `haven-app`, `haven-zephyr-app`, or `haven-dev-board-kicad`.
 
 ## Update 2026-09-30: two real new PRs reviewed, my own four rebased clean
 
