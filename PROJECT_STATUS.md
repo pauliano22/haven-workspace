@@ -26,6 +26,15 @@ Advanced PCB/PCBA but the bare board is still only $32. Blockers being fixed on 
 used a different origin than the gerbers; 5 parts short (MDBT53, BQ25120 4/5, Q2, R23/R26, KTD2026);
 rotations not yet checked in JLCPCB's preview. Project saved in Paul's JLCPCB account.
 
+**Rev A parked, Rev B started (Paul, 2026-10-29):** no rush to order. Rev A fixes are on PR #15
+(CPL origin, R23/R26 and Q2 substitutes, RGB LED + KTD2026 left unpopulated, 1.6 mm thickness),
+but the MDBT53-1M module is out of stock at the main distributors (only broker/marketplace
+listings), and the BQ25120 is 4/5. Wait for stock. Paul wants to iterate toward the best product
+before ordering, so Rev B work starts now. Working assumptions: AirPods Pro-class bud size, ≥6 h
+hear-through, keep ADAU1860, pogo-pin charging case. Rev B should move to an nRF5340 module that is
+actually in stock. Caveat recorded: codec bring-up, seal and sound can only be learned on hardware,
+so one physical build should happen before Rev B is treated as final.
+
 **Decisions (Paul, 2026-10-28):**
 - **Don't order the 5× bench board** (`haven-dev-board-kicad` master). It is OpenEarable's earbud
   board scaled 5× (160.9 × 72.9 mm vs 14.58 × 32.18 mm), can never become an earbud, and costs
