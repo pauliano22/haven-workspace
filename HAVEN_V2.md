@@ -39,6 +39,24 @@ PCB about 9 × 13 mm (MDBT53V) or 9 × 9 mm (ISP2053), module on top, everything
 bottom. Stack: battery 5.4 + board ~3.5–4 + speaker 3–4 mm. Bud about 17 × 20 × 21 mm head
 plus nozzle, vs OpenEarable's 16.6 × 34.6 × 21.2 mm shell (35–40% shorter).
 
+## Fit study result (2026-10-29, `haven-hardware#3`, draft)
+Packaging models with real part envelopes; all interference checks pass. Previews in
+`hardware/mechanical_cad/rev_b_fit_study/`.
+- **Bud head 16.7 × 18.9 × 17.5 mm**; with nozzle 22.0–23.5 mm tall depending on module and
+  driver (MDBT53V + 8 mm driver: 16.7 × 18.9 × 23.5). About 40% smaller than v1's OpenEarable
+  shell by bounding box.
+- **The CP1254 battery sets the footprint, not the module.** ISP2053 saves only ~0.9 mm of height,
+  so pick the module for supply and radio performance.
+- **Speaker: 16–32 Ω dynamic driver.** The ADAU1860 headphone output is only specified at 16/24/32 Ω
+  (~30–50 mW); the 10.2 Ω Knowles BA is out. No small 16–32 Ω earbud driver is listed at
+  DigiKey/Mouser/PUI, so a real part needs sourcing and measuring.
+- **Case 53.5 × 45.5 × 25.5 mm** (1.2 mm walls bring it under 25 mm). A 502030 cell (~250 mAh)
+  gives ~1.5 recharges of both buds; a larger cell gives ~3 for a few mm more.
+- Assumes a 0.8 mm board (v1 is 1.6 mm; 1.6 adds 0.8 mm height) and that the codec, PMIC and
+  passives fit within 1.0 mm on the underside of a 9 × 13 mm board; real placement must confirm.
+- Charging pads/magnet sit beside the speaker and the mic stands beside the board; both need a
+  short flex or spring contact. The shell is a rounded block for now; the nicer v3 surface comes later.
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
