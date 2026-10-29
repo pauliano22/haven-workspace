@@ -9,6 +9,16 @@ Everything below this section is history; where it conflicts with this section, 
 and TAC5301 drivers), but no audio has ever passed through Haven electronics, no board has been
 fabricated, the app has never run on a phone, and there have been no user conversations.
 
+**Rev A result (same day, `haven-dev-board-kicad#15`, draft):** the 1× KiCad port carries
+OpenEarable's real routing, but its converter had four bugs: bottom-side parts never mirrored,
+pad shapes never rotated, 61 multi-segment traces dropped, and 8 free pads dropped (incl. battery
+and speaker). **The 5× master board and the TAC5301 board (#11) inherit all four and must never be
+fabricated as they are.** Fixed on the Rev A branch: 0 unconnected, 0 shorts; 82 DRC entries,
+all explained. Size stays 14.73 × 32.33 mm — live copper runs to the far edge, so the "~28 mm"
+trim estimate was wrong; real shrinking is Rev B. Likely fits JLCPCB's standard 6-layer process
+(not the advanced tier), pending a real quote. Firmware must drive SENSORS_ENABLE, since load
+switch U3 now powers the codec and mic. MDBT53 isn't stocked by LCSC.
+
 **Decisions (Paul, 2026-10-28):**
 - **Don't order the 5× bench board** (`haven-dev-board-kicad` master). It is OpenEarable's earbud
   board scaled 5× (160.9 × 72.9 mm vs 14.58 × 32.18 mm), can never become an earbud, and costs
@@ -16,8 +26,8 @@ fabricated, the app has never run on a phone, and there have been no user conver
 - **Rev A = OpenEarable main 2.0 at native size, deletions only**, keeping the ADAU1860 (proven,
   driver done). Remove: microSD (CARD1) + level shifter (U10), flash (U14), IMU (U1), fuel gauge
   (U6; its 10 mΩ sense resistor R21 becomes a 0 Ω link), the flex board and its Hirose connector
-  (CN1, 112-week lead time), and the Samtec debug connector (J1 → Tag-Connect pads). Only the far
-  end can be trimmed, since the removed parts are scattered: ~14.6 × 28 mm. Shell: OpenEarable's
+  (CN1, 112-week lead time), and the Samtec debug connector (J1 → Tag-Connect pads). Board stays
+  14.73 × 32.33 mm (see Rev A result above). Shell: OpenEarable's
   enclosure plus a nozzle for standard tips. Edit in KiCad (recovered 1× port, schematic metadata
   repaired) so changes can be checked automatically. Get a real quote before ordering.
 - **Rev B = compact board (~14.6 × 22–24 mm) with a charging case**, designed while Rev A is
