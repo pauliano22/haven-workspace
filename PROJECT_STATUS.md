@@ -19,6 +19,13 @@ trim estimate was wrong; real shrinking is Rev B. Likely fits JLCPCB's standard 
 (not the advanced tier), pending a real quote. Firmware must drive SENSORS_ENABLE, since load
 switch U3 now powers the codec and mic. MDBT53 isn't stocked by LCSC.
 
+**Rev A quote (JLCPCB, 2026-10-29, via the browser bridge, nothing ordered):** $255.95 for 5
+boards, 5 assembled on both sides (bare PCB $32, parts $90 incl. ADAU1860 at $12.38 with 116 in
+stock, setup/stencil/feeders/X-ray ~$134), plus about $30–40 shipping. JLCPCB auto-switched to
+Advanced PCB/PCBA but the bare board is still only $32. Blockers being fixed on PR #15: the CPL
+used a different origin than the gerbers; 5 parts short (MDBT53, BQ25120 4/5, Q2, R23/R26, KTD2026);
+rotations not yet checked in JLCPCB's preview. Project saved in Paul's JLCPCB account.
+
 **Decisions (Paul, 2026-10-28):**
 - **Don't order the 5× bench board** (`haven-dev-board-kicad` master). It is OpenEarable's earbud
   board scaled 5× (160.9 × 72.9 mm vs 14.58 × 32.18 mm), can never become an earbud, and costs
