@@ -16,3 +16,6 @@
 [submodule "website"]
 	path = website
 	url = https://github.com/pauliano22/haven-website.git
+[submodule "hardware_kicad"]
+	path = hardware_kicad
+	url = https://github.com/pauliano22/haven-dev-board-kicad.git

@@ -37,6 +37,7 @@ git clone --recurse-submodules https://github.com/pauliano22/haven-workspace.git
 | `mobile_app/haven_custom_app` | [haven-app](https://github.com/pauliano22/haven-app) | public |
 | `firmware/haven_zephyr_app` | [haven-zephyr-app](https://github.com/pauliano22/haven-zephyr-app) | public |
 | `hardware/` | [haven-hardware](https://github.com/pauliano22/haven-hardware) | public, **Git LFS** |
+| `hardware_kicad/` | [haven-dev-board-kicad](https://github.com/pauliano22/haven-dev-board-kicad) | public |
 | `legacy_prototypes/teensy_hearing_shield` | [haven-legacy-teensy](https://github.com/pauliano22/haven-legacy-teensy) | public |
 | `legacy_prototypes/tinnitus_dsp` | [haven-legacy-dsp-sandbox](https://github.com/pauliano22/haven-legacy-dsp-sandbox) | public |
 | `website/` | [haven-website](https://github.com/pauliano22/haven-website) | public, GitHub Pages |
