@@ -62,6 +62,24 @@ Packaging models with real part envelopes; all interference checks pass. Preview
 - Speaker: 8 mm, 16–32 Ω dynamic driver (more output headroom; only 0.6 mm taller than 6 mm).
 - Case: size doesn't matter; use a larger case battery (~3 full recharges of both buds).
 
+## Schematic (2026-10-29, `haven-dev-board-kicad#16`, draft, `kicad_v2/`)
+67 parts, 46 nets, ERC 0 (all pins typed passive, so ERC checks wiring only); netlist matches
+the intended 46 nets; BOM export works. MDBT53V-1M (39 pins) and nPM1100 (25 balls) checked pin
+by pin against Raytac spec Ver.D and Nordic PS v1.2.
+- Power: case pogo → nPM1100 (100 mA input limit, 20 mA charge to 4.20 V, 1.8 V buck, ship
+  mode) → nRF5340 + ADAU1860. Battery level and in-case detect via ADC dividers. No fuel gauge.
+- No button: wake on case insertion, control from the app. One red status LED.
+- 11 test/wire pads (SWD, battery, speaker, ship-mode hold, spare GPIO).
+- **Firmware needs a new `haven_v2` board target**: codec I2C, I2S and LED move to new pins
+  (pin map in `kicad_v2/README.md`); the codec driver itself doesn't change.
+- **Finding: v1's schematic is wired wrong** (e.g., the mic DATA pin on GND, the module
+  unconnected). The v1 Rev A *board* is correct (checked pad-to-copper), so v2 circuits came from
+  the board's verified pad-to-net map, not from v1's schematic. v1's schematic needs fixing before
+  it's used as a reference.
+- Open: ESD clamp part, a few LCSC numbers, nPM1100 land-pattern check against Nordic's reference
+  layout, 8 mm driver part, data over the charge pin (deferred), MDBT53V and nPM1100 must be
+  supplied to JLCPCB.
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
