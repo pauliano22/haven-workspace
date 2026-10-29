@@ -26,7 +26,7 @@ switch U3 now powers the codec and mic. MDBT53 isn't stocked by LCSC.
 - **Rev A = OpenEarable main 2.0 at native size, deletions only**, keeping the ADAU1860 (proven,
   driver done). Remove: microSD (CARD1) + level shifter (U10), flash (U14), IMU (U1), fuel gauge
   (U6; its 10 mΩ sense resistor R21 becomes a 0 Ω link), the flex board and its Hirose connector
-  (CN1, 112-week lead time), and the Samtec debug connector (J1 → Tag-Connect pads). Board stays
+  (CN1, 112-week lead time), and the Samtec debug connector (J1 left unpopulated; its pads double as SWD test pads). Board stays
   14.73 × 32.33 mm (see Rev A result above). Shell: OpenEarable's
   enclosure plus a nozzle for standard tips. Edit in KiCad (recovered 1× port, schematic metadata
   repaired) so changes can be checked automatically. Get a real quote before ordering.
