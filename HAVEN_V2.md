@@ -80,6 +80,13 @@ by pin against Raytac spec Ver.D and Nordic PS v1.2.
   layout, 8 mm driver part, data over the charge pin (deferred), MDBT53V and nPM1100 must be
   supplied to JLCPCB.
 
+## Firmware board target (2026-10-29, `haven-zephyr-app#25`, draft)
+`haven_v2` builds locally (app 156 KB flash / 62 KB RAM; net core 143 KB / 46 KB). No pin
+conflicts: P0.05 = AIN1, P0.25 = AIN4, P1.02/P1.03 are the 1 Mbit/s TWIM pins. No button
+(`wake_button_init()` returns 0 without `sw0`), console over RTT (no UART). Codec driver
+unchanged. Charger CHG/ERR/ship-mode and the two ADC channels are declared but not yet used in code.
+To confirm: the 32 MHz crystal load setting against the MDBT53V-1M spec.
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
