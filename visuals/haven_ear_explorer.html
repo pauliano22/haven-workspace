@@ -132,7 +132,7 @@ h2 { font-size: 0.74rem; font-family: var(--font-mono); letter-spacing: 0.08em; 
         </div>
         <div class="toggles">
           <label><input type="checkbox" id="t-ear" checked> Ear</label>
-          <label><input type="checkbox" id="t-cut"> Cut-away</label>
+          <label><input type="checkbox" id="t-cut" checked> Cut-away</label>
           <label><input type="checkbox" id="t-skin"> See-through skin</label>
           <label><input type="checkbox" id="t-shell" checked> See-through shell</label>
           <label><input type="checkbox" id="t-labels"> Labels</label>
@@ -1042,9 +1042,9 @@ h2 { font-size: 0.74rem; font-family: var(--font-mono); letter-spacing: 0.08em; 
     requestAnimationFrame(tick);
   }
 
-  // initial state: ear visible from outside, bud inserted
-  setCut(false);
-  goCamNow("out");
+  // initial state: side cut-away, bud inserted
+  setCut(true);
+  goCamNow("side");
   showInfo(null);
   tick();
 })();
