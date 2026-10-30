@@ -87,6 +87,26 @@ conflicts: P0.05 = AIN1, P0.25 = AIN4, P1.02/P1.03 are the 1 Mbit/s TWIM pins. N
 unchanged. Charger CHG/ERR/ship-mode and the two ADC channels are declared but not yet used in code.
 To confirm: the 32 MHz crystal load setting against the MDBT53V-1M spec.
 
+## Ergonomic shell (2026-10-30, haven-hardware#4)
+The rounded-block fit-study bud was replaced by an organic body fitted against six real ear scans
+(HUTUBS HRTF database, TU Berlin, CC BY 4.0; concha widths 11.4–21.6 mm). Files and method in
+`hardware/mechanical_cad/v2_ergonomic_shell/`.
+
+| Shape | Worst skin compression | Mean area pressed > 1 mm | Mean contact | Mean protrusion past tragus | Mass |
+|---|---|---|---|---|---|
+| **Stacked** (driver on canal axis, battery behind, board on top) | 4.5 mm | 323 mm² | 562 mm² | +7.8 mm | 4.63 g |
+| Nestled (battery beside driver) | 5.7 mm | 451 mm² | 443 mm² | +7.9 mm | 4.61 g |
+| Fit-study block | 5.7 mm | 711 mm² | 598 mm² | +7.8 mm | 5.12 g |
+
+Stacked halves the block's tissue interference; nestled spans ~26 mm, longer than most conchas.
+No shape fits every ear yet: 3–5 mm compression remains in the smaller ears (pessimistic near
+the nozzle, since the scans close the canal). The parts (Ø12.1 mm battery + 8 mm driver) are the
+limit now, not the shell.
+
+**Decision (Paul, 2026-10-30):** keep the current size and the long battery life: CP1254 + 8 mm
+driver, stacked layout. No smaller battery, 6 mm driver or second body size for now. Next check is a
+real-ear print test (S/M/L tips). The 3D explorer and website now show this shell in the pp3 scan.
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
