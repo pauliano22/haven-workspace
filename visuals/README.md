@@ -14,8 +14,8 @@
 3. `tools/check_explorer.js` loads it headless at desktop and 400 px and switches every concept.
 
 ```
-python3 - <<'PY'   # extract the previous build's embedded assets into build/prev_assets.{glb,json}
-PY
+cp haven_ear_explorer.html build/prev_explorer.html
+python3 -c "import re,base64,json; s=open('build/prev_explorer.html').read(); open('build/prev_assets.glb','wb').write(base64.b64decode(re.search(r'window\.HAVEN_GLB = \"([^\"]+)\"', s).group(1))); open('build/prev_assets.json','w').write(re.search(r'<script id=\"haven-assets\" type=\"application/json\">(.*?)</script>', s, re.S).group(1))"
 python3 tools/build_concepts.py build/prev_assets.glb build/prev_assets.json <hardware>/mechanical_cad/v2_ergonomic_shell <form-concepts worktree>/mechanical_cad/v2_form_concepts build/assets_concepts.glb build/assets_concepts.json
 python3 tools/patch_concepts.py build/prev_explorer.html build/assets_concepts.glb build/assets_concepts.json haven_ear_explorer.html
 ```
