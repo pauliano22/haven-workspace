@@ -160,3 +160,11 @@ Open: TVS LCSC number, a real cable part, speaker part, and the DMIC_CTRL2 edge 
 3. Paul picks module, speaker, battery.
 4. Schematic (new module + charging path + pogo pins), then layout.
 5. Case board and shell.
+
+## BTE mechanics result (2026-11-04, hardware PR #6)
+
+- Pod is 19.5 × 33.2 × 11.4 mm and 5.4 g, with a 13 × 27 mm board outline (DXF with keepouts). It compresses < 0.5 mm into all six scanned heads. Done for layout.
+- In-ear unit A (mic in ear) is 13.7 × 15.8 × 17.6 mm and 1.6 g, with a 6 × 6 mm mic board. Variant B (speaker only) fits about the same.
+- In-ear compression is still 2.2–3.9 mm at the worst spot. That beats the earbud shells but isn't finished. Open item: shrink the concha body or make S/M/L sizes. This doesn't block the board layouts, because the 6 × 6 board fits any of those.
+- Cable is 46–56 mm over the helix root. Plan a 55 mm harness, or 50 / 56 mm sizes.
+- Next: in-ear board layout (2-layer, 6 × 6), then the pod board layout (6-layer, 13 × 27).
