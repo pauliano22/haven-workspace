@@ -107,6 +107,19 @@ limit now, not the shell.
 driver, stacked layout. No smaller battery, 6 mm driver or second body size for now. Next check is a
 real-ear print test (S/M/L tips). The 3D explorer and website now show this shell in the pp3 scan.
 
+## Form factor decision: behind-the-ear (Paul, 2026-11-03)
+After comparing five shapes in a scanned ear (stacked pebble, two stems, bean+wing, BTE;
+`haven-hardware#5`), v2 is **behind-the-ear (BTE)**: a pod behind the ear holds the battery and
+main board; a thin fixed cable runs over the top of the ear to a small in-ear unit with the
+speaker, nozzle and tip. It also charges in a case (pads + magnet on the pod).
+Why: least pressure in the ear of any concept (1.6 mm in pp3 vs 1.8 for the pebble, 2.7–3.8 for
+the rest), sits inside the ear, longest battery (CP1454 in the pod), and the pod's ~18 × 33 mm
+board is much easier to lay out than the pebble's ~9 × 13 mm one. Trade-off accepted: it looks like
+a hearing aid / pro in-ear monitor, not an earbud.
+Defaults to confirm during design: outer mic in the in-ear unit (keeps natural pinna cues for
+hear-through; PDM over the cable, ~6 conductors), fixed cable (no connector), CP1454 battery.
+Supersedes the pebble-based sizing above.
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
