@@ -119,6 +119,9 @@ a hearing aid / pro in-ear monitor, not an earbud.
 Defaults to confirm during design: outer mic in the in-ear unit (keeps natural pinna cues for
 hear-through; PDM over the cable, ~6 conductors), fixed cable (no connector), CP1454 battery.
 Supersedes the pebble-based sizing above.
+Confirmed (Paul, 2026-11-04): mic stays in the in-ear unit for better hear-through sound, with a
+hand-built 6-conductor cable for the first pair (no catalog cable that thin exists). Fallback if the
+harness proves unworkable: mic on the pod, 2-conductor standard receiver wire.
 
 ## BTE schematic (2026-11-03, `haven-dev-board-kicad#17`, draft)
 Two boards from `tools/gen_v2_bte_schematic.py`:
