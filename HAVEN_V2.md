@@ -120,6 +120,22 @@ Defaults to confirm during design: outer mic in the in-ear unit (keeps natural p
 hear-through; PDM over the cable, ~6 conductors), fixed cable (no connector), CP1454 battery.
 Supersedes the pebble-based sizing above.
 
+## BTE schematic (2026-11-03, `haven-dev-board-kicad#17`, draft)
+Two boards from `tools/gen_v2_bte_schematic.py`:
+- **Pod** (`kicad_v2_pod/`, 76 parts): radio, PMIC, codec, LED, charge pads, SWD pads.
+  - CP1454 battery at about 40 mA charge.
+  - nRF DC/DC inductors not fitted on the first build.
+- **In-ear** (`kicad_v2_inear/`, 11 parts, about 6 × 6 mm): mic, decoupling, 33 Ω data resistor,
+  cable and speaker pads.
+- **Cable** (6 conductors): mic supply, GND, PDM clock and data, speaker pair.
+  - The mic stays at the ear for natural hear-through cues. Its PDM clock is 3.072 MHz, with 33 Ω
+    source termination on both PDM lines.
+  - Fallback: put the mic on the pod (2-conductor cable).
+- **ESD:** TI TPD1E05U06 on every cable line and on VBUS.
+
+ERC 0 on both boards, and netlists match the intended nets. nRF pins are unchanged, so firmware
+(`haven_v2` target) is unaffected. Open: TVS LCSC number, a real cable part, speaker part.
+
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
 2. nPM1100 and CP1254 aren't easy small-quantity LCSC/DigiKey parts: consignment or another
