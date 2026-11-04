@@ -42,6 +42,17 @@ rep("Haven v2 · ergonomic shell in a scanned ear · all sizes in mm", "Haven v2
 rep("and the earbud is the v2 ergonomic shell, seated where the fit simulation put it.", "and each concept is seated where the fit simulation put it.")
 rep('aria-label="Design variant"', 'aria-label="Shape concept"')
 rep(".variant { margin-bottom: 8px; }", ".variant { margin-bottom: 8px; flex-wrap: wrap; }")
+rep('<label><input type="checkbox" id="t-shell" checked> See-through shell</label>', '<label><input type="checkbox" id="t-shell"> See-through shell</label>')
+rep('    if ($("t-shell").checked) shellMesh.material.opacity = 0.32 * (1 - 0.6 * e);',
+    """    { const see = $("t-shell").checked || state.mode === "how";
+      const op = see ? 0.32 * (1 - 0.6 * e) : (e > 0 ? Math.max(0.22, 1 - 1.6 * e) : 1);
+      ["shell", "pod"].forEach(id => (bud.items[id] || []).forEach(o => { o.material.opacity = op; o.material.depthWrite = op > 0.95; o.material.needsUpdate = true; })); }""")
+rep("  function setMode(m) {\n    state.mode = m;", "  function setMode(m) {\n    state.mode = m;\n    setShell(m === \"how\" || $(\"t-shell\").checked);")
+rep("      case: { pos: V(78, 86, 100), target: V(0, 9, 0) }",
+    """      case: { pos: V(78, 86, 100), target: V(0, 9, 0) },
+      below: { pos: BUD_C.clone().add(V(0.35, -1, 0.5).normalize().multiplyScalar(75)), target: BUD_C.clone() },
+      front: { pos: BUD_C.clone().add(V(1, 0.05, 0.4).normalize().multiplyScalar(85)), target: BUD_C.clone().add(V(-6, 0, 0)) }""")
+rep("  buildCams();\n", "  buildCams();\n  window.havenCam = k => { if (CAMS[k]) goCamNow(k); };   // review/screenshot hook\n")
 rep(".stats dd { margin: 0; font-variant-numeric: tabular-nums; }",
     ".stats dd { margin: 0; font-variant-numeric: tabular-nums; }\n.stats .pro { color: var(--left, #2f6b52); }\n.stats .con { color: var(--right, #94600f); }\n.stats .warn { grid-column: 1 / -1; font-size: 0.8rem; color: var(--ink-soft); font-style: italic; }")
 
@@ -164,8 +175,9 @@ BUD = r"""  // Parts are built from their frames (x = thin or cylinder axis), so
     const items = {}, extra = [];
     const add = (id, obj, parent = g) => { parent.add(obj); (items[id] = items[id] || []).push(obj); if (!shared) obj.traverse(o => { if (o.isMesh) reg(o, id); }); return obj; };
 
-    const resin = () => phys(0xe9ece8, { roughness: 0.32, clearcoat: 0.5, clearcoatRoughness: 0.25, transparent: true, opacity: 0.3, depthWrite: false, side: THREE.DoubleSide, envMapIntensity: 1.2 });
-    const shell = new THREE.Mesh(V0.geo, resin());
+    // matte product finish, opaque by default; vertex colours carry the red "presses into this ear" overlap
+    const resin = geo => phys(0xeceae5, { roughness: 0.62, clearcoat: 0.12, clearcoatRoughness: 0.5, side: THREE.DoubleSide, envMapIntensity: 0.9, transparent: true, opacity: 1, depthWrite: true, vertexColors: !!geo.attributes.color });
+    const shell = new THREE.Mesh(V0.geo, resin(V0.geo));
     shell.renderOrder = 5; shell.castShadow = false;
     add("shell", shell);
 
@@ -184,7 +196,7 @@ BUD = r"""  // Parts are built from their frames (x = thin or cylinder axis), so
     buildParts(V0.PF, g, add, V0.C, V0.a.battery_label, NOZ_BASE);
     if (V0.pod) {
       const pg = new THREE.Group();
-      const ps = new THREE.Mesh(V0.pod.geo, resin()); ps.renderOrder = 5;
+      const ps = new THREE.Mesh(V0.pod.geo, resin(V0.pod.geo)); ps.renderOrder = 5;
       add("pod", ps, pg);
       buildParts(V0.pod.PF, pg, add, V0.pod.C, V0.a.battery_label, null);
       pg.applyMatrix4(V0.pod.M);
@@ -218,14 +230,13 @@ rep("""    earRoot.add(v.bud.group);
     });
   }
   earRoot.updateMatrixWorld(true);
-  // behind-the-ear: a cable from the in-ear unit's boss over the ear to the top of the pod (route illustrative)
+  // behind-the-ear: the cable routed in seat_concepts.py (up past the tragus, over the helix root, down to the pod; kept off the skin)
   for (const key in VAR) {
     const v = VAR[key];
     if (!v.pod || !v.bud.items.cable) continue;
-    const a0 = new THREE.Box3().setFromObject(v.bud.items.cable[0]).getCenter(new THREE.Vector3());
-    const top = V(v.pod.C.x, v.pod.top - 1.5, v.pod.C.z).applyMatrix4(v.bud.extra[0].matrixWorld);
-    const path = new THREE.CatmullRomCurve3([a0, a0.clone().add(V(0, 7, 6)), V(a0.x - 6, 31, a0.z + 6), V(top.x + 3, top.y + 9, top.z + 4), top]);
-    const cable = new THREE.Mesh(new THREE.TubeGeometry(path, 80, 0.6, 10, false), phys(0x3b4045, { roughness: 0.45, clearcoat: 0.3 }));
+    if (!v.a.cable) continue;
+    const path = new THREE.CatmullRomCurve3(v.a.cable.map(p => V(...p)));
+    const cable = new THREE.Mesh(new THREE.TubeGeometry(path, 240, 0.6, 12, false), phys(0x3b4045, { roughness: 0.45, clearcoat: 0.3 }));
     cable.castShadow = true; reg(cable, "cable"); v.bud.items.cable.push(cable); v.bud.extra.push(cable); earRoot.add(cable);
   }""")
 rep("""  ORDER.slice(1).forEach(k => { VAR[k].bud.group.visible = false; });""",
@@ -261,13 +272,14 @@ STATS = r"""  function renderStats() {
       $("case-note").textContent = `Case not designed yet for the ${c.label.toLowerCase()} concept. ${c.key === "bte" ? "It would need room for the pod and a stowed cable." : "A stem needs tall slots instead of shallow pockets."}`;
     }
     $("stats").innerHTML = `<dt>Size</dt><dd>${st.bbox.map(x => x.toFixed(1)).join(" × ")} mm</dd>`
+      + `<dt>In this ear</dt><dd class="${c.display && !c.display.fits ? "con" : ""}">${!c.display ? "" : c.display.fits ? `Fits: presses ${c.display.pen.toFixed(1)} mm at most` : `Doesn't fit this ear without pressing ${c.display.pen.toFixed(1)} mm (shown in red)`}</dd>`
       + `<dt>Weight</dt><dd>${st.mass}</dd>`
-      + `<dt>Skin compression</dt><dd>${st.comp[0].toFixed(1)} mm avg · ${st.comp[1].toFixed(1)} mm worst</dd>`
-      + `<dt>Past the tragus</dt><dd>${sg(st.prot[0])} mm avg · ${sg(st.prot[1])} mm worst</dd>`
+      + `<dt>6-ear compression</dt><dd>${st.comp[0].toFixed(1)} mm avg · ${st.comp[1].toFixed(1)} mm worst</dd>`
+      + `<dt>6-ear protrusion</dt><dd>${sg(st.prot[0])} mm avg · ${sg(st.prot[1])} mm worst</dd>`
       + `<dt>Tipping moment</dt><dd>${st.moment.toFixed(2)} N·mm (lower stays in better)</dd>`
       + `<dt>Battery life</dt><dd>${st.life[0]} loud · ${st.life[1]} quiet</dd>`
       + `<dt>Pro</dt><dd class="pro">${c.pro}</dd><dt>Con</dt><dd class="con">${c.con}</dd>`
-      + `<dd class="warn">Averages and worst case over 6 scanned ears.${c.note ? " " + c.note : ""}</dd>`;
+      + `<dd class="warn">"In this ear" is the pose shown (skin may give up to ${c.display ? c.display.limit.toFixed(1) : "1.0"} mm; the tip inside the canal entrance is excluded). The 6-ear rows are averages and worst case from the fit study, which allowed deeper overlap.${c.note ? " " + c.note : ""}</dd>`;
     document.querySelectorAll("#variant button").forEach(b => b.setAttribute("aria-pressed", b.dataset.v === active ? "true" : "false"));
     const list = $("part-list"); list.innerHTML = "";
     fillList(list, EAR_LIST.filter(id => bud.items[id] || ["canal", "eardrum", "pinna"].includes(id)));

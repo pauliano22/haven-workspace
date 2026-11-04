@@ -96,6 +96,7 @@ CONCEPTS = [
          fit=os.path.join(form, "fit_stem_head_cell.json"),
          stats=dict(bbox=[19.4, 33.0, 22.3], mass="5.13 g", comp=[3.9, 4.7], prot=[6.7, 13.3], moment=0.59, life=["6.4–8.2 h", "13.7–17.6 h"]),
          pro="AirPods look, sits about 1 mm flatter, antenna at the stem tip.", con="Presses a bit more, 0.5 g heavier, needs two boards and a flex.",
+         note="The 6-ear rows come from the fit study's earlier version of this shell; the shape shown was smoothed with the same envelope.",
          text=dict(battery=dict(CP1254, role="Kept in the head next to the driver; the stem holds the radio module and power board."), driver=DRIVER)),
     dict(key="stem_cyl", label="Stem (cell in stem)", case=False, battery_label="GP 1018L10",
          shell=os.path.join(form, "stem_cyl_shell.stl"), parts=os.path.join(form, "parts_stem_cyl", "parts.json"),
