@@ -136,8 +136,13 @@ Two boards from `tools/gen_v2_bte_schematic.py`:
   - Fallback: put the mic on the pod (2-conductor cable).
 - **ESD:** TI TPD1E05U06 on every cable line and on VBUS.
 
-ERC 0 on both boards, and netlists match the intended nets. nRF pins are unchanged, so firmware
-(`haven_v2` target) is unaffected. Open: TVS LCSC number, a real cable part, speaker part.
+**Two mic positions (Paul, 2026-11-04):** the in-ear mic is primary. A fallback SPH0641 sits on the
+pod (U14) on the same PDM pair, opposite channel: in-ear SELECT low = DMIC0 (the channel firmware
+already uses), pod SELECT high = DMIC1 (firmware picks the input). Either or both can be fitted.
+Build variants: **6-wire** (in-ear mic) or **2-wire** (speaker-only in-ear unit, pod mic), from
+the same boards. The pod mic's port must face outward through the pod shell, away from the head.
+ERC 0 on both boards (pod 79 parts/48 nets), and netlists match. nRF pins are unchanged.
+Open: TVS LCSC number, a real cable part, speaker part, and the DMIC_CTRL2 edge mapping at bring-up.
 
 ## Open risks
 1. Module supply (MDBT53V 25 in stock; ISP2053 unknown).
