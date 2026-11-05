@@ -40,6 +40,25 @@ Every placed part has an LCSC number checked on lcsc.com (2026-11-05). JLC can p
   and try it in a real ear before the full order.
 - Comfort sleeves M / L: `sleeve_{M,L}_{L,R}.stl`, in flexible resin for the test (silicone later).
 
+## Rough cost (ballpark, NOT a quote)
+Typical JLCPCB / distributor pricing from memory; real numbers come from the quote step.
+
+| Item | Rough range |
+|---|---|
+| Pod PCB, 6-layer, ENIG, POFV, 5 pcs | $60–150 (POFV is the big adder) |
+| Pod assembly, 3 boards, both sides, setup + extended-part fees + parts (ADAU1860 etc.) | $100–200 |
+| MDBT53V-1M ×3 + nPM1100 ×3 from DigiKey/Mouser, shipped to JLC | $35–60 |
+| In-ear PCB + assembly (mic, 2 passives) | $30–50 |
+| Case PCB + assembly | $30–50 |
+| Resin prints: pods, in-ear units, sleeves, case | $30–60 |
+| CP1454 ×2, drivers ×2, LiPo, spring pins, magnets, ear tips, wire | $50–90 |
+| Shipping (2–3 orders) | $40–70 |
+| **Total** | **~$375–730** |
+
+This is likely **over the $300 budget**. The pod board is most of it. Ways down, in order:
+cheapest first-article only (2 pods, skip spares); skip POFV by moving to a 0.4 mm-pitch-friendly
+codec/PMIC fan-out (a redesign, not recommended); hand-assemble the case board.
+
 ## Known small things
 - Pod BOM "U8" is a 1 MΩ resistor (kept v1's reference).
 - Pod nRF DC/DC inductors L101/L102 are DNP on the first build (module runs in LDO mode).
