@@ -168,3 +168,11 @@ Open: TVS LCSC number, a real cable part, speaker part, and the DMIC_CTRL2 edge 
 - In-ear compression is still 2.2–3.9 mm at the worst spot. That beats the earbud shells but isn't finished. Open item: shrink the concha body or make S/M/L sizes. This doesn't block the board layouts, because the 6 × 6 board fits any of those.
 - Cable is 46–56 mm over the helix root. Plan a 55 mm harness, or 50 / 56 mm sizes.
 - Next: in-ear board layout (2-layer, 6 × 6), then the pod board layout (6-layer, 13 × 27).
+
+## 2026-11-05: merges, website live, pod board routed
+- Paul approved: all open draft PRs merged (hardware #2–#6, kicad #15–#18, zephyr #24/#25, app #16);
+  kicad #11 (TAC5301 swap, superseded) left open. Website `main` fast-forwarded to Sanctuary, live.
+- Pod board fully routed (kicad PR #19, draft): DRC 0 / unconnected 0 / parity 0. Order with POFV.
+- Seal = standard S/M/L ear tip on the 5.4 mm nozzle (unchanged). Next: swappable silicone
+  concha sleeves (S/M/L) over the in-ear body for comfort, then the charging case board + shell,
+  BOM, and the v2 quote. Paul said no quote emails for now.
