@@ -176,3 +176,17 @@ Open: TVS LCSC number, a real cable part, speaker part, and the DMIC_CTRL2 edge 
 - Seal = standard S/M/L ear tip on the 5.4 mm nozzle (unchanged). Next: swappable silicone
   concha sleeves (S/M/L) over the in-ear body for comfort, then the charging case board + shell,
   BOM, and the v2 quote. Paul said no quote emails for now.
+
+## 2026-11-05 (later): earpiece reshape, case, fab files
+- **In-ear body moved 3 mm up, nozzle 5.5 → 8.5 mm** (sweep of 6 body offsets on the six HUTUBS
+  ears; up was the only direction that helped). Mean worst compression 3.35 → 1.77 mm, mean area
+  pressed 201 → 46 mm². Cost: sticks out ~2–3 mm more. pp48 still 2.9 mm, so a real-ear test
+  print decides. The bore now meets the driver face at its edge (fine for a sealed IEM, check by ear).
+- **Comfort sleeves S/M/L:** S = bare shell; M/L = 0.8 / 1.5 mm soft band over the concha part of
+  the body (`sleeves.py`). Seal is still the standard S/M/L ear tip on the nozzle.
+- **Case** 48.6 × 50.6 × 49.9 mm (haven-hardware #7) + case board (kicad #20): USB-C → MCP73831 →
+  800 mAh LiPo → TPS61023 5 V → spring pins 5.0 mm apart. IP5306 / BQ25619 rejected (light-load
+  shutoff / needs an MCU). Spring pin candidate KH-PG2011005-DZ.
+- **Pod charge contacts** should be 3.5 mm brass pins, flush with the shell (were recessed 2.3 mm).
+- **Fab files** for all three boards: kicad #21. Order list + rough cost: `V2_ORDER.md`
+  (ballpark $375–730, likely over the $300 budget; pod board is most of it).
