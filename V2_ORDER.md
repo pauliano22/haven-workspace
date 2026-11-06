@@ -22,7 +22,7 @@ Gerbers, drill, BOM and placement files: `hardware_kicad/fab/v2_{pod,inear,case}
 | Raytac MDBT53V-1M | 2 | DigiKey / Mouser | Low stock is the risk. Consign to JLC or hand-solder (LGA, 39 pads: hard by hand) |
 | Nordic nPM1100-CAAB-R | 2 | DigiKey / Mouser / Future | 0.4 mm WLCSP-25: consign to JLC, not hand-solderable |
 | VARTA CP1454 (85–120 mAh) | 2 | Texim / VARTA distributors | Tabbed version for TP8/TP9 |
-| 8–9 mm 16–32 Ω dynamic driver | 2 + spares | Ole Wolff OWR-0860T-16 (DigiKey, MOQ 10, ~€0.48, 10-wk lead, 0 stock 2026-11-05; LCSC C6139455 out) + a few generic 8 mm TWS drivers (AliExpress, ~2 wk) as a stopgap | Datasheet says 9.0 × 4.5 mm, DigiKey says 8 mm: measure one. Shell rebuilds for any size: `HAVEN_DRIVER=8.0x3.9 python3 bte.py`. 8 mm shell fits better on the six scans (mean worst press 1.53 vs 1.76 mm, area 31 vs 46 mm²) |
+| 8 mm 16–32 Ω dynamic driver | 2 + spares | AliExpress: [NSC Audio 8 mm 16 Ω PU+Ti](https://www.aliexpress.us/item/3256811665047808.html) $12.80 / pair (4.9★, 4k sold), or [JCD 10-pc 8 mm 32 Ω TWS](https://www.aliexpress.us/item/3256810394275219.html) ~$5 / 10 | Thickness not listed: ask seller / measure. OWR-0860T-16 dropped: DigiKey only sells 10,000-pc reels (2026-11-06). Shell rebuilds for any size: `HAVEN_DRIVER=8.0x3.9 python3 bte.py`; 8 mm fits better (mean worst 1.53 vs 1.76 mm) |
 | 6-conductor cable, ~1.5 mm OD, 55 mm + ends | 2 | Hand-built (38–40 AWG litz/magnet wire in sleeve) | No catalog part this thin |
 | Ear tips S/M/L, 4.5 mm bore | 1 set each | SpinFit CP145 or generic IEM silicone | |
 | 3 × 2 mm N52 disc magnets | 4 (2 pods + 2 case) | Any | |
@@ -34,6 +34,7 @@ Gerbers, drill, BOM and placement files: `hardware_kicad/fab/v2_{pod,inear,case}
 Every placed part has an LCSC number checked on lcsc.com (2026-11-05). JLC can place the whole board.
 
 ## Prints (resin, JLC3DP or a local printer)
+JLC3DP quote 2026-11-06 (9600 resin, not signed in): **$0.32 per part**, 3-day build; shipping needs sign-in. JLC3DP has **no flexible resin**: print sleeves in 9600 for the fit test (rigid = worst case).
 - Pod shells L/R, in-ear shells L/R: `hardware/mechanical_cad/v2_bte/bte_*_{L,R}.stl`.
 - Case base, lid, bottom plate: `case_*.stl` (merged).
 - In-ear shells: the reshaped body (driver up 3 mm, nozzle 8.5 mm). Print one cheap test pair first
