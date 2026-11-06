@@ -8,11 +8,11 @@ ordering (no quote requests sent yet, per Paul). Board BOMs are exported from th
 
 | Board | Qty in a pair | Spec | Files | State |
 |---|---|---|---|---|
-| Pod | 2 (order 5, assemble 2–3) | 13 × 27 mm, **6-layer**, 0.8 mm, **via-in-pad filled and capped (POFV)**, 0.09 mm track, 0.2/0.35 mm via, ENIG | `kicad_v2_pod/` (kicad PR #19) | Routed, DRC 0/0/0 |
+| Pod | 2 (order 5, assemble 2–3) | 13 × 27 mm, **6-layer**, 0.8 mm, **via-in-pad filled and capped (POFV)**, 0.09 mm track, 0.2/0.35 mm via, ENIG | `kicad_v2_pod/`  | Routed, DRC 0/0/0 |
 | In-ear | 2 (order 5) | 6 × 6 mm, 2-layer, 0.6 mm, ENIG | `kicad_v2_inear/` (merged) | Routed, DRC 0/0/0 |
-| Case | 1 (order 5, assemble 2) | 44 × 15.5 mm, 2-layer, 1.0 mm, HASL ok | `kicad_v2_case/` (kicad PR #20) | Routed, DRC 0/0/0 |
+| Case | 1 (order 5, assemble 2) | 44 × 15.5 mm, 2-layer, 1.0 mm, HASL ok | `kicad_v2_case/` | Routed, DRC 0/0/0 |
 
-Gerbers, drill, BOM and placement files: `hardware_kicad/fab/v2_{pod,inear,case}/` (kicad PR #21,
+Gerbers, drill, BOM and placement files: `hardware_kicad/fab/v2_{pod,inear,case}/` (
 `tools/export_v2_fab.py`). Check every part rotation in JLC's placement preview before paying.
 
 ## Parts JLCPCB can't place from LCSC stock (buy separately)
@@ -22,7 +22,7 @@ Gerbers, drill, BOM and placement files: `hardware_kicad/fab/v2_{pod,inear,case}
 | Raytac MDBT53V-1M | 2 | DigiKey / Mouser | Low stock is the risk. Consign to JLC or hand-solder (LGA, 39 pads: hard by hand) |
 | Nordic nPM1100-CAAB-R | 2 | DigiKey / Mouser / Future | 0.4 mm WLCSP-25: consign to JLC, not hand-solderable |
 | VARTA CP1454 (85–120 mAh) | 2 | Texim / VARTA distributors | Tabbed version for TP8/TP9 |
-| 8 mm 16–32 Ω dynamic driver | 2 + spares | Ole Wolff OWR-0860T-16 class | Not yet sourced/measured |
+| 8–9 mm 16–32 Ω dynamic driver | 2 + spares | Ole Wolff OWR-0860T-16 (DigiKey, MOQ 10, ~€0.48, 10-wk lead, 0 stock 2026-11-05; LCSC C6139455 out) + a few generic 8 mm TWS drivers (AliExpress, ~2 wk) as a stopgap | Datasheet says 9.0 × 4.5 mm, DigiKey says 8 mm: measure one. Shell rebuilds for any size: `HAVEN_DRIVER=8.0x3.9 python3 bte.py`. 8 mm shell fits better on the six scans (mean worst press 1.53 vs 1.76 mm, area 31 vs 46 mm²) |
 | 6-conductor cable, ~1.5 mm OD, 55 mm + ends | 2 | Hand-built (38–40 AWG litz/magnet wire in sleeve) | No catalog part this thin |
 | Ear tips S/M/L, 4.5 mm bore | 1 set each | SpinFit CP145 or generic IEM silicone | |
 | 3 × 2 mm N52 disc magnets | 4 (2 pods + 2 case) | Any | |
@@ -35,9 +35,10 @@ Every placed part has an LCSC number checked on lcsc.com (2026-11-05). JLC can p
 
 ## Prints (resin, JLC3DP or a local printer)
 - Pod shells L/R, in-ear shells L/R: `hardware/mechanical_cad/v2_bte/bte_*_{L,R}.stl`.
-- Case base, lid, bottom plate: `case_*.stl` (haven-hardware PR #7).
+- Case base, lid, bottom plate: `case_*.stl` (merged).
 - In-ear shells: the reshaped body (driver up 3 mm, nozzle 8.5 mm). Print one cheap test pair first
   and try it in a real ear before the full order.
+- Optional: 8 mm-driver earpiece shells (`inear8_{L,R}.stl` in the test-print zip) to compare fit side by side.
 - Comfort sleeves M / L: `sleeve_{M,L}_{L,R}.stl`, in flexible resin for the test (silicone later).
 
 ## Rough cost (ballpark, NOT a quote)
