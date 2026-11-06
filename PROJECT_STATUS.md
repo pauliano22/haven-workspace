@@ -1,5 +1,53 @@
 # Project status — start here
 
+## Verified status (2026-11-06). Source of truth for "what has been tested"
+
+Rule for every chat: a claim about what works must point at a row here (or add one with evidence).
+If it isn't here, it is **not verified**. Prices: only real quotes count; estimates are labelled.
+
+Current design: **v2 behind-the-ear (BTE)**: pod behind the ear (nRF5340 module MDBT53V-1M,
+nPM1100 charger, ADAU1860 audio chip, CP1454 coin cell) + in-ear unit (8 mm speaker + mic, 6 × 6 mm
+board) joined by a 6-wire cable over the ear, plus a charging case. Plan: `HAVEN_V2.md`. Order list
+and costs: `V2_ORDER.md`.
+
+### Verified on real hardware
+| What | Hardware | Date | Evidence |
+|---|---|---|---|
+| Firmware builds, flashes, boots; BLE advertises as "Haven" | nRF5340 DK | 2026-08-24 | firmware `5f2b303` (RTT log) |
+| Custom BLE control service (volume etc.), validated writes | nRF5340 DK | 2026-08-25 | firmware `0f4e17f` |
+| Settings survive reset (NVS) | nRF5340 DK | 2026-08-25 | memory note `acousticshield.md` |
+| Haven app code talks to the DK's control service | DK + laptop Web Bluetooth (not a phone) | 2026-08-25 | app `df42ab1` |
+
+### Verified in software only (no hardware involved)
+| What | Date | Evidence |
+|---|---|---|
+| App unit tests (safety caps, tones, BLE queue): 47 pass | 2026-09-21 | `BENCH_TEST_PLAN.md` §0 |
+| Firmware host tests (~510) | 2026-10-28 | section below |
+| v2 board firmware target compiles (`haven_v2/nrf5340/cpuapp`) | 2026-11-06 | local NCS v3.4.0 build at firmware `9915c56`: app core 156 KB flash (15%), net core 143 KB (54%) |
+| v2 pod board's module pin wiring = the `haven_v2` firmware board file's source (`kicad_v2/`): 39/39 pins match | 2026-11-06 | netlist diff, this chat |
+| All three v2 boards (pod 6-layer, in-ear, case) pass KiCad DRC (0 errors, 0 unconnected) and schematic parity | 2026-11-05 | hardware_kicad #19/#20/#21, merged |
+| Earpiece fit, simulated on 6 scanned ears (HUTUBS): mean worst press 1.76 mm (9 mm speaker) / 1.53 mm (8 mm) | 2026-11-06 | `hardware/mechanical_cad/v2_bte/README.md` |
+
+### NOT verified yet (needs the real build)
+| What | How it gets verified |
+|---|---|
+| **Any audio through Haven electronics** (mic → ADAU1860 → speaker). The DK has no audio chip; ADAU1860 driver work is unfinished | First assembled pod board, flashed from the DK's Debug-out (SWD pads on the pod) |
+| Pod / in-ear / case boards actually work | JLC trial order, then bring-up |
+| Fit in a real ear | Resin test print (quoted 2026-11-06: $0.32/part at JLC3DP, shipping not yet seen) |
+| Speaker size | AliExpress 8 mm drivers: measure one, rebuild with `HAVEN_DRIVER=…` |
+| Hand-made 6-wire cable (~1.5 mm) | Build one. Fallback: mic on pod, 2-wire cable |
+| Case spring-pin stroke | Measure one, set `POGO_WORK_H` in `case.py` |
+| **Max volume / safety cap on the finished device** | Measure SPL on the real build before Paul's dad wears it. Required |
+| App on a real phone | Never run on a phone yet |
+
+### Money: real quotes only
+| Item | Quote | Date |
+|---|---|---|
+| v1 earbud board (Rev A), 5 assembled | $255.95 + ~$30–40 ship (JLCPCB) | 2026-10-29 |
+| Test print, resin 9600 | $0.32 per part, 3-day build; shipping needs sign-in | 2026-11-06 |
+| 8 mm speakers (AliExpress) | NSC 16 Ω $12.80/pair; JCD 32 Ω 10-pack ~$5 | 2026-11-06 |
+| v2 boards (pod, in-ear, case) | **No real quote yet.** Estimate only: ~$350–400 for the full first build | — |
+
 ## Update 2026-10-28: direction reset. Earbud board next, no bench board.
 
 A full project review (firmware, hardware, app, business) plus new research changed the plan.
