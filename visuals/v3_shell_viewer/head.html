@@ -1,0 +1,65 @@
+<title>Haven v3 Pod Shell</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+:root{--bg:#f4f2ee;--panel:#fffdf9;--fg:#23262b;--muted:#666b73;--line:#d9d4ca;--accent:#2f6f5e;--stage:#e9e6df}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#17191c;--panel:#1f2226;--fg:#e8e6e1;--muted:#a0a4aa;--line:#34383e;--accent:#7cc4ae;--stage:#101214;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#17191c;--panel:#1f2226;--fg:#e8e6e1;--muted:#a0a4aa;--line:#34383e;--accent:#7cc4ae;--stage:#101214;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:15px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:1100px;margin:0 auto;padding-block:20px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{font-size:1.35rem;margin:0;text-wrap:balance}
+.sub{color:var(--muted);margin:0;max-width:65ch}
+.grid{display:flex;flex-wrap:wrap;gap:16px}
+#stage{flex:2 1 420px;min-width:0;height:min(70vh,560px);background:var(--stage);border:1px solid var(--line);border-radius:10px;overflow:hidden;position:relative;touch-action:none}
+#stage canvas{display:block;width:100%;height:100%}
+.hint{position:absolute;left:10px;bottom:8px;font-size:12px;color:var(--muted);pointer-events:none}
+.panel{flex:1 1 260px;min-width:0;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.panel h2{font-size:.8rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin:0}
+label.row{display:flex;gap:8px;align-items:center;cursor:pointer}
+.sw{width:12px;height:12px;border-radius:3px;flex:none;border:1px solid var(--line)}
+input[type=range]{width:100%;accent-color:var(--accent)}
+.btns{display:flex;flex-wrap:wrap;gap:8px}
+button{font:inherit;padding:6px 10px;border-radius:7px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer}
+button:hover{border-color:var(--accent)}
+dl{display:grid;grid-template-columns:auto 1fr;gap:4px 12px;margin:0}
+dt{color:var(--muted)}dd{margin:0}
+ul{margin:0;padding-left:18px}li{margin:2px 0}
+.note{border-left:3px solid var(--accent);padding-left:10px;color:var(--muted)}
+</style>
+<div class="wrap">
+  <h1>Haven v3 pod: test shell and what goes inside</h1>
+  <p class="sub">Drag to turn it, scroll or pinch to zoom. Slide "Pull apart" to open the shell. Generated from the CAD files on 13 Nov 2026; spring pins redrawn to the real part on 14 Nov. Nothing here has been printed or built.</p>
+  <div class="grid">
+    <div id="stage"><div class="hint">drag: rotate · scroll / pinch: zoom · right-drag: move</div></div>
+    <div class="panel">
+      <h2>Show</h2>
+      <label class="row"><input type="checkbox" id="c-lid" checked><span class="sw" style="background:#e9a64a"></span>Lid (outer face)</label>
+      <label class="row"><input type="checkbox" id="c-tray" checked><span class="sw" style="background:#5b8fd0"></span>Tray (faces the head)</label>
+      <label class="row"><input type="checkbox" id="c-parts" checked><span class="sw" style="background:#3f9a6b"></span>Board, battery, radio</label>
+      <label class="row"><input type="checkbox" id="c-pins" checked><span class="sw" style="background:#d9c25a"></span>Charging spring pins</label>
+      <label class="row"><input type="checkbox" id="c-glass"><span class="sw"></span>See-through shell</label>
+      <h2>Pull apart</h2>
+      <input type="range" id="explode" min="0" max="100" value="45" aria-label="Pull apart">
+      <h2>View</h2>
+      <div class="btns"><button data-v="out">Outer face</button><button data-v="head">Head side</button><button data-v="edge">Edge on</button><button data-v="iso">Angled</button></div>
+      <h2>Size</h2>
+      <dl><dt>Outside</dt><dd>33.2 × 12.6 × 10.0 mm</dd><dt>Wall</dt><dd>0.8 mm</dd><dt>Shell weight</dt><dd>about 1.05 g (estimate)</dd><dt>Whole pod</dt><dd>about 3.2 g (estimate)</dd></dl>
+    </div>
+  </div>
+  <div class="grid">
+    <div class="panel"><h2>What you are looking at</h2><ul>
+      <li><b>Tray</b> (blue): the half against the head. The battery lies in it.</li>
+      <li><b>Lid</b> (orange): the half facing out. It covers the radio module and the chips. The small hole is for the microphone.</li>
+      <li><b>Board</b> (green) with the <b>radio module</b> (grey) on top and the <b>battery</b> (silver) underneath.</li>
+      <li><b>Spring pins</b> (gold): the charging contacts. Drawn at the real part's size: 2.0 mm base, 1.5 mm barrel, 4.5 mm tall. They run from the board, past the end of the battery, and out through the two holes on the head side.</li>
+      <li>The hole at the top end is where the two speaker wires leave for the ear.</li></ul></div>
+    <div class="panel"><h2>Not settled yet</h2><ul>
+      <li>The inside parts are plain blocks showing the space each one needs, not the real shapes.</li>
+      <li>The spring pin shown is 4.5 mm tall, so its tip stands 0.5 mm out of the face that rests against the head. A 4.0 mm version would sit flush. The length gets picked once the battery is measured.</li>
+      <li>The battery's real size can differ from its listing by up to 0.5 mm in thickness. There is no spare room for that.</li>
+      <li>Hole positions follow the board drawing. Left or right ear has not been checked.</li>
+      <li>No latch, seal or magnet pocket. The two halves just slip together.</li></ul>
+      <p class="note">This shell is for judging size and feel on a test print. It is not the final enclosure.</p></div>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>

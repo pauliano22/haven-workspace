@@ -1,0 +1,97 @@
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>TAC5301 Bench Guide</title>
+<style>
+:root{--bg:#f4f2ec;--card:#fffdf8;--fg:#22241f;--muted:#5d6259;--line:#d9d5c8;--accent:#2f6b4f;--warn:#a4480f;--warnbg:#fbeedd;--brd:#2e6b46;--chip:#2a2c2f;--gnd:#6d7178;--pwr:#c0392b;--hv:#d98200;--dk:#2f6fb5;--mic:#7a4fb5;--spk:#1f8a80;--nc:#c9c6bb;--cap:#8a7a3a}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#171a17;--card:#1f2320;--fg:#e9ebe4;--muted:#a3a99e;--line:#343a35;--accent:#7cc7a0;--warn:#f0a868;--warnbg:#3a2a17;--brd:#2b5a3d;--chip:#0d0e0f;--gnd:#9aa0a8;--pwr:#ef6a5b;--hv:#f0a43a;--dk:#6aa9ec;--mic:#b08fe6;--spk:#55c9bd;--nc:#4a4f4a;--cap:#cdbb6a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#171a17;--card:#1f2320;--fg:#e9ebe4;--muted:#a3a99e;--line:#343a35;--accent:#7cc7a0;--warn:#f0a868;--warnbg:#3a2a17;--brd:#2b5a3d;--chip:#0d0e0f;--gnd:#9aa0a8;--pwr:#ef6a5b;--hv:#f0a43a;--dk:#6aa9ec;--mic:#b08fe6;--spk:#55c9bd;--nc:#4a4f4a;--cap:#cdbb6a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font:16px/1.5 system-ui,-apple-system,"Segoe UI",sans-serif}
+.wrap{max-width:860px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:16px}
+h1{font-size:1.5rem;margin:0;text-wrap:balance}h2{font-size:1.05rem;margin:0 0 8px}p{margin:0 0 8px}
+.muted{color:var(--muted)}.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px;min-width:0}
+.warn{background:var(--warnbg);border-left:4px solid var(--warn);border-radius:8px;padding:10px 12px}
+ol,ul{margin:0;padding-left:20px}li{margin:6px 0}
+label.ck{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-top:1px solid var(--line)}label.ck:first-of-type{border-top:0}
+label.ck input{width:20px;height:20px;margin-top:2px;flex:none;accent-color:var(--accent)}
+.tw{overflow-x:auto}table{border-collapse:collapse;width:100%;font-size:.95rem}td,th{text-align:left;padding:7px 8px;border-top:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600;border-top:0}
+td.num{white-space:nowrap;font-variant-numeric:tabular-nums}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+code{font:0.88em ui-monospace,Menlo,Consolas,monospace;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:1px 5px;overflow-wrap:anywhere}
+pre{margin:6px 0;padding:10px;background:var(--bg);border:1px solid var(--line);border-radius:8px;overflow-x:auto;font:0.85rem ui-monospace,Menlo,Consolas,monospace}
+svg{width:100%;min-width:640px;height:auto;display:block}.brd{fill:var(--brd)}.chip{fill:var(--chip)}.hole{fill:var(--card)}
+svg text{font:11px system-ui,sans-serif;fill:var(--fg)}svg .t{fill:#e9ebe4}svg .c{text-anchor:middle}svg .n{fill:#fff;font-weight:700;font-size:10px}svg .b{font-weight:700}
+.p{stroke:#fff;stroke-width:1}.gnd{fill:var(--gnd);background:var(--gnd)}.pwr{fill:var(--pwr);background:var(--pwr)}.hv{fill:var(--hv);background:var(--hv)}.dk{fill:var(--dk);background:var(--dk)}.mic{fill:var(--mic);background:var(--mic)}.spk{fill:var(--spk);background:var(--spk)}.nc{fill:var(--nc);background:var(--nc)}.cap{fill:var(--cap);background:var(--cap)}
+.legend{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.9rem;color:var(--muted)}
+</style>
+<div class="wrap">
+<div><h1>TAC5301 bench test: at-the-bench guide</h1>
+<p class="muted">One chip, a microphone, a speaker and the dev kit (DK) on a breadboard. Written 14 Nov 2026 from the chip's datasheet. Nothing here has been run on hardware yet. This test is not needed for the v3 pod.</p></div>
+
+<div class="warn"><b>The one thing that is easy to miss:</b> the chip's main ground is the metal square under its belly. The adapter has no pad for it, only a hole. Solder it through the hole from the back and run a wire from it to ground, or the chip will not answer.</div>
+
+<div class="card"><h2>1. Before the trip: do you have these?</h2>
+<p class="muted">Ticks are saved on this device only.</p>
+<div id="need"></div></div>
+
+<div class="card"><h2>2. Solder the chip to the adapter</h2>
+<ol>
+<li>Use the <b>24-pin</b> position (marked 4×4 mm). The chip sits turned 45°, on the X of silver fingers. The fingers already carry solder.</li>
+<li>Find pin 1. Chip: the corner with the dot. Adapter: header hole "1". Beep from hole 1 to find its finger. Pins count counter-clockwise seen from above.</li>
+<li>Turn a spare chip over and beep between the centre square and the four corner contacts. They should all beep together. If not, stop and tell Claude.</li>
+<li>Flux the fingers, place the chip, check all four sides with a magnifier, tape one side.</li>
+<li><b>Belly pad first:</b> flip the board, flux in the hole, iron inside the hole against the chip's metal, feed thin solder for about 3 seconds. Add a wire to that solder: it goes to ground.</li>
+<li>Each finger: iron tip in the groove at the outer end, slide toward the chip until it touches. Do not press down. Flux each side first.</li>
+<li>Look for bridges between neighbouring fingers. Fix with flux and solder wick.</li>
+<li>Meter, no power: neighbouring header holes must not beep together. Holes 10 and 12 are both ground and may beep with each other; hole 11 between them must not beep with either.</li>
+<li>Solder in the header pins and push the adapter across the breadboard's centre gap.</li>
+</ol></div>
+
+<div class="card"><h2>3. Wire it (power off, battery unplugged)</h2>
+<p>Header hole numbers are chip pin numbers. Ground means the breadboard's ground rail, joined to a GND pin on the DK and the battery's black wire.</p>
+<div class="tw"><svg viewBox="0 0 720 470" overflow="visible" role="img" aria-label="Adapter board seen from above with what each of its 24 pins connects to" xmlns="http://www.w3.org/2000/svg"><rect x="60" y="150" width="600" height="170" rx="8" class="brd"/><rect x="326.0" y="201.0" width="68" height="68" class="chip" transform="rotate(45 360.0 235.0)"/><circle cx="360.0" cy="235.0" r="7" class="hole"/><text x="360.0" y="283.0" class="t c">chip turned 45°; hole = belly pad (ground)</text><text x="68" y="240.0" class="t">24-pin side of the adapter, top view</text><circle cx="85" cy="306" r="9" class="p cap"/><text x="85" y="310" class="n c">1</text><text transform="translate(81 342) rotate(60)" class="l"><tspan class="b">DREG</tspan> cap</text><circle cx="135" cy="306" r="9" class="p dk"/><text x="135" y="310" class="n c">2</text><text transform="translate(131 342) rotate(60)" class="l"><tspan class="b">BCLK</tspan> P1.06</text><circle cx="185" cy="306" r="9" class="p dk"/><text x="185" y="310" class="n c">3</text><text transform="translate(181 342) rotate(60)" class="l"><tspan class="b">FSYNC</tspan> P1.07</text><circle cx="235" cy="306" r="9" class="p nc"/><text x="235" y="310" class="n c">4</text><text transform="translate(231 342) rotate(60)" class="l"><tspan class="b">DOUT</tspan> —</text><circle cx="285" cy="306" r="9" class="p dk"/><text x="285" y="310" class="n c">5</text><text transform="translate(281 342) rotate(60)" class="l"><tspan class="b">DIN</tspan> P1.08</text><circle cx="335" cy="306" r="9" class="p pwr"/><text x="335" y="310" class="n c">6</text><text transform="translate(331 342) rotate(60)" class="l"><tspan class="b">IOVDD</tspan> VDD</text><circle cx="385" cy="306" r="9" class="p dk"/><text x="385" y="310" class="n c">7</text><text transform="translate(381 342) rotate(60)" class="l"><tspan class="b">SCL</tspan> P1.03</text><circle cx="435" cy="306" r="9" class="p dk"/><text x="435" y="310" class="n c">8</text><text transform="translate(431 342) rotate(60)" class="l"><tspan class="b">SDA</tspan> P1.02</text><circle cx="485" cy="306" r="9" class="p nc"/><text x="485" y="310" class="n c">9</text><text transform="translate(481 342) rotate(60)" class="l"><tspan class="b">GPIO1</tspan> —</text><circle cx="535" cy="306" r="9" class="p gnd"/><text x="535" y="310" class="n c">10</text><text transform="translate(531 342) rotate(60)" class="l"><tspan class="b">VSSA</tspan> GND</text><circle cx="585" cy="306" r="9" class="p pwr"/><text x="585" y="310" class="n c">11</text><text transform="translate(581 342) rotate(60)" class="l"><tspan class="b">AVDD</tspan> VDD</text><circle cx="635" cy="306" r="9" class="p gnd"/><text x="635" y="310" class="n c">12</text><text transform="translate(631 342) rotate(60)" class="l"><tspan class="b">VSSA</tspan> GND</text><circle cx="635" cy="164" r="9" class="p hv"/><text x="635" y="168" class="n c">13</text><text transform="translate(639 140) rotate(-60)" class="l"><tspan class="b">HVDD</tspan> 9 V</text><circle cx="585" cy="164" r="9" class="p mic"/><text x="585" y="168" class="n c">14</text><text transform="translate(589 140) rotate(-60)" class="l"><tspan class="b">MICBIAS</tspan> bias</text><circle cx="535" cy="164" r="9" class="p mic"/><text x="535" y="168" class="n c">15</text><text transform="translate(539 140) rotate(-60)" class="l"><tspan class="b">IN1P</tspan> mic</text><circle cx="485" cy="164" r="9" class="p mic"/><text x="485" y="168" class="n c">16</text><text transform="translate(489 140) rotate(-60)" class="l"><tspan class="b">IN1M</tspan> mic</text><circle cx="435" cy="164" r="9" class="p nc"/><text x="435" y="168" class="n c">17</text><text transform="translate(439 140) rotate(-60)" class="l"><tspan class="b">IN2P</tspan> —</text><circle cx="385" cy="164" r="9" class="p nc"/><text x="385" y="168" class="n c">18</text><text transform="translate(389 140) rotate(-60)" class="l"><tspan class="b">IN2M</tspan> —</text><circle cx="335" cy="164" r="9" class="p spk"/><text x="335" y="168" class="n c">19</text><text transform="translate(339 140) rotate(-60)" class="l"><tspan class="b">OUT1M</tspan> spk</text><circle cx="285" cy="164" r="9" class="p spk"/><text x="285" y="168" class="n c">20</text><text transform="translate(289 140) rotate(-60)" class="l"><tspan class="b">OUT1P</tspan> spk</text><circle cx="235" cy="164" r="9" class="p nc"/><text x="235" y="168" class="n c">21</text><text transform="translate(239 140) rotate(-60)" class="l"><tspan class="b">OUT2P</tspan> —</text><circle cx="185" cy="164" r="9" class="p nc"/><text x="185" y="168" class="n c">22</text><text transform="translate(189 140) rotate(-60)" class="l"><tspan class="b">OUT2M</tspan> —</text><circle cx="135" cy="164" r="9" class="p pwr"/><text x="135" y="168" class="n c">23</text><text transform="translate(139 140) rotate(-60)" class="l"><tspan class="b">AVDD</tspan> VDD</text><circle cx="85" cy="164" r="9" class="p cap"/><text x="85" y="168" class="n c">24</text><text transform="translate(89 140) rotate(-60)" class="l"><tspan class="b">VREF</tspan> cap</text></svg></div>
+<div class="legend"><span><span class="dot dk"></span>to the DK</span><span><span class="dot pwr"></span>3 V supply</span><span><span class="dot hv"></span>9 V</span><span><span class="dot gnd"></span>ground</span><span><span class="dot mic"></span>microphone</span><span><span class="dot spk"></span>speaker</span><span><span class="dot cap"></span>capacitor only</span><span><span class="dot nc"></span>empty</span></div>
+<div class="tw"><table><tr><th>Pin</th><th>Name</th><th>Connect to</th></tr><tr><td class="num"><span class="dot gnd"></span>pad</td><td>VSS</td><td>Belly-pad wire to ground. Required.</td></tr><tr><td class="num"><span class="dot cap"></span>1</td><td>DREG</td><td>10 µF cap to ground</td></tr><tr><td class="num"><span class="dot dk"></span>2</td><td>BCLK</td><td>DK P1.06</td></tr><tr><td class="num"><span class="dot dk"></span>3</td><td>FSYNC</td><td>DK P1.07</td></tr><tr><td class="num"><span class="dot nc"></span>4</td><td>DOUT</td><td>empty</td></tr><tr><td class="num"><span class="dot dk"></span>5</td><td>DIN</td><td>DK P1.08</td></tr><tr><td class="num"><span class="dot pwr"></span>6</td><td>IOVDD</td><td>DK VDD + 0.1 µF</td></tr><tr><td class="num"><span class="dot dk"></span>7</td><td>SCL</td><td>DK P1.03 + 4.7 kΩ to VDD</td></tr><tr><td class="num"><span class="dot dk"></span>8</td><td>SDA</td><td>DK P1.02 + 4.7 kΩ to VDD</td></tr><tr><td class="num"><span class="dot nc"></span>9</td><td>GPIO1</td><td>empty</td></tr><tr><td class="num"><span class="dot gnd"></span>10</td><td>VSSA</td><td>Ground</td></tr><tr><td class="num"><span class="dot pwr"></span>11</td><td>AVDD</td><td>DK VDD + 0.1 µF + 10 µF</td></tr><tr><td class="num"><span class="dot gnd"></span>12</td><td>VSSA</td><td>Ground</td></tr><tr><td class="num"><span class="dot hv"></span>13</td><td>HVDD</td><td>9 V battery + 1 µF</td></tr><tr><td class="num"><span class="dot mic"></span>14</td><td>MICBIAS</td><td>1 µF to ground, 2.2 kΩ to mic +</td></tr><tr><td class="num"><span class="dot mic"></span>15</td><td>IN1P</td><td>1 µF, then mic +</td></tr><tr><td class="num"><span class="dot mic"></span>16</td><td>IN1M</td><td>1 µF, then ground</td></tr><tr><td class="num"><span class="dot nc"></span>17</td><td>IN2P</td><td>empty</td></tr><tr><td class="num"><span class="dot nc"></span>18</td><td>IN2M</td><td>empty</td></tr><tr><td class="num"><span class="dot spk"></span>19</td><td>OUT1M</td><td>Speaker wire A</td></tr><tr><td class="num"><span class="dot spk"></span>20</td><td>OUT1P</td><td>100 Ω, then speaker wire B</td></tr><tr><td class="num"><span class="dot nc"></span>21</td><td>OUT2P</td><td>empty</td></tr><tr><td class="num"><span class="dot nc"></span>22</td><td>OUT2M</td><td>empty</td></tr><tr><td class="num"><span class="dot pwr"></span>23</td><td>AVDD</td><td>DK VDD + 0.1 µF</td></tr><tr><td class="num"><span class="dot cap"></span>24</td><td>VREF</td><td>1 µF cap to ground</td></tr></table></div>
+<ul>
+<li>Microphone: the pin joined to the metal can is ground. The other is +.</li>
+<li>DK VDD is 3.0 V, the bottom edge of what the chip accepts (3.0 to 3.6 V). If the chip answers but behaves oddly, feed pins 11 and 23 from a real 3.3 V source (the Teensy's 3.3 V pin, grounds joined).</li>
+<li>Keep microphone and speaker about 30 cm apart, or they howl.</li>
+<li>The 1 µF capacitors on pins 13 and 14 must be rated 25 V or more.</li>
+</ul></div>
+
+<div class="card"><h2>4. Power-up order</h2>
+<ol>
+<li>Beep: 9 V rail to ground must not beep. VDD rail to ground must not beep.</li>
+<li>Plug in the DK, switch it on. Pins 6 and 11 to ground: about 3.0 V.</li>
+<li>Touch the chip. Warm means unplug and re-check pins 10 to 13 and the belly pad.</li>
+<li>Clip in the 9 V battery last. Pin 13 to ground: about 9 V.</li>
+</ol></div>
+
+<div class="card"><h2>5. Run the test</h2>
+<p>Hand the DK to WSL from Windows PowerShell: <code>usbipd.exe list</code>, then <code>usbipd.exe attach --wsl --busid &lt;the J-Link line's id&gt;</code>. Then in the WSL terminal:</p>
+<pre>~/projects/active/haven_workspace/firmware/haven_zephyr_app/tools/tac5301_bench.sh --build</pre>
+<p>After moving a wire, re-check without re-loading:</p>
+<pre>~/projects/active/haven_workspace/firmware/haven_zephyr_app/tools/tac5301_bench.sh --check-only</pre>
+<p class="muted">Do not connect the Haven app during this test.</p>
+<div class="tw"><table><tr><th>It prints</th><th>Meaning</th><th>Look at</th></tr>
+<tr><td><b>RESULT: RUNNING</b></td><td>Awake, clock locked, microphone bias on</td><td>Tap the microphone and listen. Too quiet: remove the 100 Ω resistor</td></tr>
+<tr><td>THE CHIP DID NOT ANSWER</td><td>No reply on the control wires</td><td>Belly-pad ground; pins 6, 10, 11, 12, 23; SDA and SCL swapped; the two 4.7 kΩ resistors; a solder bridge</td></tr>
+<tr><td>clock MISSING</td><td>Answers but sees no audio clock</td><td>Pins 2 and 3 to P1.06 and P1.07</td></tr>
+<tr><td>mic bias OFF or FAULT</td><td>9 V missing or bias shorted</td><td>Battery, pin 13, parts on pin 14, microphone the right way round</td></tr>
+<tr><td>mode ASLEEP</td><td>Wake-up did not take</td><td>Send Claude the printed lines</td></tr></table></div>
+<p>If the first chip will not answer after an hour of checking, build the second adapter instead of reworking the first.</p></div>
+
+<div class="card"><h2>6. Once it passes</h2>
+<ul>
+<li>Speak and tap: does sound pass cleanly? Hiss and hum on a breadboard do not count.</li>
+<li>Current, if the meter has a mA range: in series with the wire to pins 11 and 23. The datasheet says about 24.5 mA.</li>
+<li>The delay measurement needs an oscilloscope with two probes, or a stereo line input. Tell Claude which you have.</li>
+<li>Send: the printed lines, photos of the adapter (both sides) and the breadboard, and what the corner-contact beep test showed.</li>
+</ul>
+<p class="muted">Nothing in this test goes in or near an ear.</p></div>
+</div>
+<script>
+(function(){const items=["Breadboard","About 20 pin-to-pin jumper wires","9 V battery and a snap-on clip with wires","3 × 0.1 µF ceramic capacitors with legs","5 × 1 µF ceramic capacitors with legs, rated 25 V or more","3 × 10 µF capacitors with legs","2 × 4.7 kΩ resistors","1 × 2.2 kΩ resistor","1 × 100 Ω resistor","Soldering iron with a tip 0.5 mm or smaller","Flux pen or paste","Thin solder and solder wick","Masking tape, tweezers, magnifier","Multimeter with a continuity beeper","Micro-USB cable for the DK, and the laptop"];
+let st={};try{st=JSON.parse(localStorage.getItem("tac5301need")||"{}")}catch(e){}
+const box=document.getElementById("need");
+items.forEach((t,i)=>{const l=document.createElement("label");l.className="ck";const c=document.createElement("input");c.type="checkbox";c.checked=!!st[i];
+c.addEventListener("change",()=>{st[i]=c.checked;try{localStorage.setItem("tac5301need",JSON.stringify(st))}catch(e){}});
+const s=document.createElement("span");s.textContent=t;l.append(c,s);box.append(l);});})();
+</script>

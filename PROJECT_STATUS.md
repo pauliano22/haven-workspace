@@ -1,9 +1,34 @@
 # Project status — start here
 
+> **2026-11-11: size redesign proposed.** `DESIGN_BRIEF_SHELL_V3.md` gives three concepts for a hearing-aid-sized pod. Recommended: flat pouch cell under a narrow one-sided board, about 32 × 13 × 9 mm and 3.3 g (v2: 33 × 18 × 11 mm, 5.4 g). **Paul chose concept A with the mic on the pod (2026-11-11).** Trial placement passed; v3 schematic generated, 0 ERC violations (`hardware_kicad/kicad_v3_pod/README.md`). Paul chose a 17 mm cell (about 40 mAh) so the parts fit. v3 board: all 67 parts placed, routing unfinished (two autoroute attempts: 12 and 16 connections open; paused until the cell size is confirmed, see `hardware_kicad/kicad_v3_pod/README.md`). Pod 32.4 × 13.0 × 9.2 mm. v3 concept added to the live website explorer 2026-11-11 (website commits 7b76dab, then a rounded outer form from `hardware/mechanical_cad/v3_slim/pod_v3_styled.py`: 33.3 × 12.5 × 10.0 mm, assumes an unconfirmed 3.5 × 8 × 20 mm cell; built with `visuals/tools/add_v3_slim.py`). Note: the explorer's v2 pod model is 9.2 mm thick while the current v2 shell file is 11.4 mm, so the site understates how much thinner v3 is. Firmware codec supply delay raised to 6 ms.
+
+> **2026-11-14 (evening): TAC5301 bench test prepared for Thanksgiving.** Step-by-step guide: `hardware_kicad/TAC5301_BENCH_GUIDE.md`. The adapter boards fit the chip. Found and fixed before any hardware run: the bench firmware never woke the chip from sleep and stopped the audio clock when no tone played (both would have given silence); output drive set for the 8 ohm speaker; the chip's ground belly pad must be soldered through the adapter's hole. One command at the bench: `firmware/haven_zephyr_app/tools/tac5301_bench.sh --build` (prints PASS or what is missing). Host tests pass, both DK builds pass, **nothing run on hardware**. Paul still needs passives, a 9 V battery and a fine iron tip (list in the guide). This test is not on the v3 pod's path.
+
+> **2026-11-15 01:15: box-build quote request SENT to PCBWay** (Service@pcbway.com, from Paul's Cornell Outlook, 9 MB package attached; text in `hardware_kicad/fab/v3_box_build/PCBWAY_INQUIRY.txt`). Asks two prices: (A) final assembly on JLCPCB-made boards, PCBWay adds the Bluetooth module U1 and mic U14; (B) full turnkey. JLCPCB signed-in quote for the boards: pod $239.79 (2 assembled, without U1/U14), cradle $55.08, shipping not shown. Nothing ordered. Waiting for PCBWay's reply.
+
+> **2026-11-14 (night): v3 charging cradle designed** (`hardware_kicad/kicad_v3_cradle/README.md`): a JLCPCB-assembled 2-layer dock board (USB-C, two 5.1 k resistors, a capacitor, four gold pads; DRC 0 errors) plus a printed base, frame and magnet lid. The pod shell got a flat contact land around its spring pins. Nothing printed or built. Website explorer and main page updated and published with Paul's OK (commits 56e3bac, 277e3a7).
+
+> **2026-11-14 (later): first real JLCPCB number for the v3 pod.** Bare boards, 5 pieces: **$101.82 + $26.08 shipping** (quote, not signed in, nothing ordered). JLCPCB refuses to assemble boards under 10 x 10 mm; the pod is 9.6 mm wide, so an assembly version with break-off rails now exists (`hardware_kicad/kicad_v3_pod/panel/`, `fab/v3_pod_panel/`). Assembly price, parts stock and the placement preview are still unknown. Inductor footprint now follows Murata's sheet (snapshot FINAL5). Speaker series resistor adopted (220 ohm, provisional). `BRINGUP_PLAN.md` has a v3 section.
+
+> **2026-11-14: v3 pod board revised, still not ordered.** Charge pads now fit a real spring pin (2.0 mm base; two LCSC candidates with datasheets read; length chosen after the cell is measured). Power corner re-laid: the converter's switching line is one 0.85 mm top-layer track with no via (was 4.4 mm, 2 vias), output and input capacitors next to the chip. 65 parts, 0 open, 0 errors, 2 warnings, mirror check passes, factory files re-exported, rotation check sheet in `hardware_kicad/fab/v3_pod/PLACEMENT_CHECK.md`. New unknowns: inductor now 0.5 mm from the audio chip; seven 0.13-0.15 mm part gaps; LED polarity unsettled (library vs datasheet). First draft of the v3 in-ear piece (`hardware/mechanical_cad/v3_slim/inear_v3.py`, 7.0 mm across, sized from the speaker maker's drawing). **Open safety decision:** with this speaker the audio chip could reach about 118 dB at 1 kHz at full scale (calculated); a series resistor at the speaker is recommended as a limit software cannot remove (`DESIGN_BRIEF_SHELL_V3.md`, "Worst-case loudness"). Full log: `hardware_kicad/kicad_v3_pod/README.md`.
+
+> **2026-11-13 (later): v3 pod board fully routed** — 0 open connections, 0 rule errors, schematic matches, mirror check passes. It is NOT reviewed and NOT orderable yet: power tracks are all minimum width and decoupling is far from pins (list in `hardware_kicad/kicad_v3_pod/README.md`). Charge contacts: Paul chose spring pins (`DESIGN_BRIEF_SHELL_V3.md`). Comparison page v2 / v3 / typical aid and a pod shell viewer were published as private artifacts (sources in `visuals/v3_compare/`, `visuals/v3_shell_viewer/`).
+
+> **2026-11-13 (earlier): v3 pod board at 3 open connections** (DOUT, CHG_ERR, LED_EN), no clearance or short errors; not orderable yet. Details and lessons in `hardware_kicad/kicad_v3_pod/README.md`. Firmware low-battery shutdown added (`src/battery_guard.c`, builds, host-tested, never run on hardware). Printable two-part test shell generated (`hardware/mechanical_cad/v3_slim/pod_v3_shell.py`); it showed the charge contacts sit 3.5 mm inside the shell wall, which needs a design decision (`DESIGN_BRIEF_SHELL_V3.md`).
+
+> **2026-11-11: DO NOT ORDER the v2 pod, the in-ear board or Rev A.** An independent review found that every footprint
+> converted from the EasyEDA files is a mirror image (audio chip, load switch, codec crystal, both microphones, LED transistor),
+> plus an under-rated power inductor and a load switch that is too fast. Details and fixes: `DESIGN_REVIEW_2026-11.md`.
+> The library and generator are fixed; the boards are not re-laid yet. `hardware_kicad/tools/verify_v2_order_files.sh` now fails
+> until they are (it runs `check_footprint_handedness.py`). All earlier "DRC clean / ready to quote" statements are superseded.
+
+
 ## Verified status (2026-11-06). Source of truth for "what has been tested"
 
 Rule for every chat: a claim about what works must point at a row here (or add one with evidence).
 If it isn't here, it is **not verified**. Prices: only real quotes count; estimates are labelled.
+
+**Ordering checklist: `ORDER_READINESS.md`** (what is verified, open or blocked before the first v2 order).
 
 Current design: **v2 behind-the-ear (BTE)**: pod behind the ear (nRF5340 module MDBT53V-1M,
 nPM1100 charger, ADAU1860 audio chip, CP1454 coin cell) + in-ear unit (8 mm speaker + mic, 6 × 6 mm
@@ -17,13 +42,18 @@ and costs: `V2_ORDER.md`.
 | Custom BLE control service (volume etc.), validated writes | nRF5340 DK | 2026-08-25 | firmware `0f4e17f` |
 | Settings survive reset (NVS) | nRF5340 DK | 2026-08-25 | memory note `acousticshield.md` |
 | Haven app code talks to the DK's control service | DK + laptop Web Bluetooth (not a phone) | 2026-08-25 | app `df42ab1` |
+| Haven Audio Control Service driven over real Bluetooth from Windows (`bleak`, not a browser): scan, read on connect, write and read back volume and band, change notification, 4 invalid writes rejected with the right errors, a NUS command acknowledged. 13 of 13 checks passed, and the board's own RTT log shows each write and each rejection | nRF5340 DK + laptop Bluetooth | 2026-11-07 | firmware `9915c56`; script `firmware/haven_zephyr_app/tools/ble_dk_windows_test.py`; whole loop (flash, boot, test, board-log cross-check, reset) is `tools/dk_regression.sh`, re-run 2026-11-07 with 14 of 14 passing. The app's own screen is still untested: Chrome's device picker can't be clicked by the automation |
+| Current firmware master still boots after the October merges: BLE controller up, advertises "Haven", GATT service registered, volume and band restored from flash (values saved in August survived a full reflash) | nRF5340 DK | 2026-11-07 | firmware `9915c56`, local NCS v3.4.0 build `~/.cache/haven_builds/dk_master`, RTT log read from RAM after zeroing it. Expected non-pass: `ADAU1860 control init failed (err -19)` because the bare DK has no codec chip |
 
 ### Verified in software only (no hardware involved)
 | What | Date | Evidence |
 |---|---|---|
 | App unit tests (safety caps, tones, BLE queue): 47 pass | 2026-09-21 | `BENCH_TEST_PLAN.md` §0 |
-| Firmware host tests (~510) | 2026-10-28 | section below |
+| Firmware host tests: 9 suites, all pass (853 checks, plus 16,514 in the filter-math sweep). Run against fake hardware, so they prove the logic, not the chip | 2026-11-07 | `tests/host/run_tests.sh` at firmware `9915c56` (earlier figure was ~510 on 2026-10-28, before the TAC5301 tests) |
+| All three v2 boards' fab files (gerbers, drill, parts list, placement) match the current board files; pod, in-ear and case DRC and schematic parity re-run: 0 / 0 / 0 | 2026-11-07 | KiCad 9.0.9, `tools/export_v2_fab.py` re-run in a scratch copy and diffed |
+| "Teach the device a sound" prototype: learns a cycling hum from one 30 s clip and finds it again in synthetic 7-minute rooms. Alone: found 100%, false alarms 0%, none of 5 other sounds fires it. With six sounds overlapping: found 34 to 52%, false alarms 0%. Synthetic sounds only, no real recordings | 2026-11-07 | `firmware/haven_zephyr_app/ml/sound_signature.py`, 13 tests, `experiments/sound_signature_experiment.py` |
 | v2 board firmware target compiles (`haven_v2/nrf5340/cpuapp`) | 2026-11-06 | local NCS v3.4.0 build at firmware `9915c56`: app core 156 KB flash (15%), net core 143 KB (54%) |
+| v2 pod netlist has a codec-to-nRF mic-audio return path (codec SDATAO to nRF P0.31 = I2S input, declared in the `haven_v2` pin file), so the board needs no change for on-device sound recognition. Firmware receive path is not written | 2026-11-07 | `kicad-cli` netlist export of `kicad_v2_pod/`, net `/DOUT` |
 | v2 pod board's module pin wiring = the `haven_v2` firmware board file's source (`kicad_v2/`): 39/39 pins match | 2026-11-06 | netlist diff, this chat |
 | All three v2 boards (pod 6-layer, in-ear, case) pass KiCad DRC (0 errors, 0 unconnected) and schematic parity | 2026-11-05 | hardware_kicad #19/#20/#21, merged |
 | Earpiece fit, simulated on 6 scanned ears (HUTUBS): mean worst press 1.76 mm (9 mm speaker) / 1.53 mm (8 mm) | 2026-11-06 | `hardware/mechanical_cad/v2_bte/README.md` |
@@ -33,12 +63,16 @@ and costs: `V2_ORDER.md`.
 |---|---|
 | **Any audio through Haven electronics** (mic → ADAU1860 → speaker). The DK has no audio chip; ADAU1860 driver work is unfinished | First assembled pod board, flashed from the DK's Debug-out (SWD pads on the pod) |
 | Pod / in-ear / case boards actually work | JLC trial order, then bring-up |
+| JLCPCB accepts the pod as drawn (audio-chip pads 0.10 mm apart, via holes 0.15–0.195 mm from copper vs their published 0.2 mm, 0.09 mm tracks) | **Partly answered 2026-11-07:** real quotes in (pod $269, in-ear PCB $44, case $68; JLCPCB fabricates all three at instant-quote level, no rejection). The design-review verdict is still missing: run JLCDFM or an actual order review. Checklist and findings: `ORDER_READINESS.md` |
+| Bluetooth module's 32 MHz crystal load setting (firmware says 8 pF, Raytac's spec says 12.5 pF) | Measure carrier frequency error on the first pod, or ask Raytac |
+| A trustworthy source for the VARTA CP1454 battery with solder tags | Ask Texim; see `ORDER_READINESS.md` |
 | Fit in a real ear | Resin test print (quoted 2026-11-06: $0.32/part at JLC3DP, shipping not yet seen) |
 | Speaker size | AliExpress 8 mm drivers: measure one, rebuild with `HAVEN_DRIVER=…` |
 | Hand-made 6-wire cable (~1.5 mm) | Build one. Fallback: mic on pod, 2-wire cable |
 | Case spring-pin stroke | Measure one, set `POGO_WORK_H` in `case.py` |
 | **Max volume / safety cap on the finished device** | Measure SPL on the real build before Paul's dad wears it. Required |
 | App on a real phone | Never run on a phone yet |
+| Board re-advertises after a central disconnects | After a Windows (`bleak`) client disconnected, the DK stayed "connected" for 2+ min with no disconnect log until reset. Cause unknown (Windows holding the link, or a firmware gap on a real link loss). Test with a phone or another central |
 
 ### Money: real quotes only
 | Item | Quote | Date |
@@ -46,6 +80,11 @@ and costs: `V2_ORDER.md`.
 | v1 earbud board (Rev A), 5 assembled | $255.95 + ~$30–40 ship (JLCPCB) | 2026-10-29 |
 | Test print, resin 9600 | $0.32 per part, 3-day build; shipping needs sign-in | 2026-11-06 |
 | 8 mm speakers (AliExpress) | NSC 16 Ω $12.80/pair; JCD 32 Ω 10-pack ~$5 | 2026-11-06 |
+| Raytac MDBT53V-1M (Bluetooth module) | DigiKey Marketplace: 30 in stock, $7.00 each, **plus $25.00 flat shipping**, ships ~14 days. Not at Mouser | 2026-11-07 |
+| Nordic nPM1100-CAAB-R (power chip) | In stock: Mouser 6,221 at $1.92 (qty 1), DigiKey 6,374 at $2.17 (qty 1–9) | 2026-11-07 |
+| VARTA CP1454 battery | **No reliable small-quantity source found.** Not at DigiKey or Mouser. Only consumer resellers ($10–25, rechargeable "LIR1454-class"), none vetted; tabbed version unconfirmed | 2026-11-07 |
+| v3 boards at JLCPCB, parts mounted (signed-in quote, nothing ordered) | Pod: 5 boards, 2 assembled, JLC edge rails (71.6 x 71 mm): **$239.79** (PCB $103.85 + Standard PCBA $135.94), U1 radio module NOT placed (C6300378, 0 stock; JLC cannot mix it with consigned parts) and U14 mic NOT placed ("The processing of this component is difficult", review after order, possible fee). Cradle: 5 boards, 2 assembled, **$55.08**, all 3 parts matched. Shipping not shown (cart only) | 2026-11-15 |
+| v3 boards at PCBWay (bare, 5 each, shipped to US) | Pod board $483.51 (plugged vias) / about $653.92 (resin-filled, the spec match); cradle board $196.65. About 4-6x JLCPCB for the same pod board. Assembly and box build: no online price (need uploaded files / an inquiry form with Paul's contact details) | 2026-11-15 |
 | v2 boards (pod, in-ear, case) | **No real quote yet.** Estimate only: ~$350–400 for the full first build | — |
 
 ## Update 2026-10-28: direction reset. Earbud board next, no bench board.
@@ -408,3 +447,20 @@ charger. Full reasoning in `haven-dev-board-kicad/HARDWARE_COST_ALTERNATIVES.md`
    `haven-zephyr-app#16`) whenever you want — real, tested, not urgent.
 4. Business docs are read-when-convenient, no blocking dependency on
    anything else.
+
+## Parts Paul already bought (found in Gmail order emails, 2026-11-07)
+
+All ordered 2026-10-11, shipped to Paul's home; for the **TAC5301 bench latency experiment** (`hardware_kicad/TAC5301_BENCH_EXPERIMENT.md`),
+a breadboard test of a second codec option. Not for the v2 pod.
+
+| Seller | Item | Qty | Cost | Order |
+|---|---|---|---|---|
+| Mouser | TI TAC5301QRGERQ1 (mono audio codec, 24-pin QFN, 0.5 mm pitch) | 2 | $3.22 + $5.99 ship | PO 40722793, shipped 10/12 |
+| DigiKey | CMA-4544PF-W analog electret microphone (102-1721-ND) | 2 | $2.98 | salesorder 102168085, invoice 134278685, shipped 10/11. Order total $25.70 incl. tariff |
+| DigiKey | Schmartboard 204-0015-01, 0.5 mm-pitch 12-pin adapter board (1988-1022-ND) | 2 | $12.00 | same order |
+| Amazon | MECCANIXITY 8 ohm 0.5 W 30 mm small speaker | 1 | $5.93 | #113-6465830-6787422, delivered 10/12 |
+
+The DigiKey order of 2026-08-10 (salesorder 100907623) is probably the Teensy prototype board (per Paul; contents not confirmed, they are in a PDF attachment).
+Not sure the Schmartboard adapters fit the 24-pin QFN: check that the 0.5 mm adapter has enough pads before soldering.
+
+**Plan (Paul, 2026-11-07):** do the TAC5301 bench test at home over Thanksgiving (late Nov 2026), parts are there. Not before. Ask HAVEN chat for the step-by-step guide then.

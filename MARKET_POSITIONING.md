@@ -93,7 +93,7 @@ the original research:
   buyer (a musician/noise-sensitive consumer, not a touring professional)
   — this is competitor pricing, not primary market research.
 - Manufacturing/BOM cost isn't reconciled against any of these price
-  points here — `haven_dev_board_kicad/HARDWARE_COST_ALTERNATIVES.md`
+  points here — `hardware_kicad/HARDWARE_COST_ALTERNATIVES.md`
   has the real component-cost findings for the dev board specifically,
   not a production-unit cost estimate at any particular volume.
 - Didn't check whether any of these competitors, especially Sensaphonics
