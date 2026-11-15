@@ -3,3 +3,7 @@
 firmware/open-earable-2/
 mobile_app/open_earable_flutter/
 mobile_app/open_earable_app/
+
+# Private: family health details (hearing figures). Keep local, never in this public repo.
+FABLE_BRIEF.md
+ADAPTIVE_PROTECTION_DESIGN.md

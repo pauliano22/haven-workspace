@@ -27,3 +27,17 @@ python3 tools/seat_concepts.py build/assets_concepts.glb build/assets_concepts.j
 python3 tools/route_cable.py build/assets_seated.glb build/assets_seated.json
 python3 tools/patch_concepts.py build/prev_explorer.html build/assets_seated.glb build/assets_seated.json haven_ear_explorer.html
 ```
+
+## Size comparison page (v2 / v3 / typical aid)
+
+- `v3_compare/haven_size_comparison.html`, private artifact https://claude.ai/artifact/P8tSjur57aiYR68tr2vU4f. Its pictures
+  come from a build copy of the explorer, not from the published explorer:
+  `python3 tools/update_compare_assets.py build/explorer_with_v3.html build/explorer_cmp_<date>.html` swaps in the real
+  v2 pod shell (11.4 mm thick, 17.8 mm wide body, 19.5 mm at the cable boss; the explorer drew it 9.2 mm thick) and the v3 in-ear draft, then
+  `NODE_PATH=<a node_modules with playwright-core> node tools/shoot_compare.js <abs path to that html> <out dir>` takes
+  the pictures with the fixed cameras (`window.havenCam`). The page embeds them as JPEG.
+- 2026-11-14: the website explorer (`website/explorer/index.html`) now equals `build/explorer_cmp_2026-11-14.html`
+  (real v2 shell, v3 in-ear draft, current sizes, weights and status text) and is live. `visuals/haven_ear_explorer.html`
+  is older and was not updated.
+- `v3_shell_viewer/`: `head.html` + mesh data + `tail.html` = `haven_v3_pod_shell.html`, private artifact
+  https://claude.ai/artifact/6tRo7gD8oD1Xx6FHVv2ht5.

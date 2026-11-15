@@ -2,7 +2,7 @@
 
 Research prompted by wanting to find funding that doesn't depend on Cornell-
 specific programs or deadlines (those are tracked in
-`haven_dev_board_kicad/HARDWARE_COST_ALTERNATIVES.md`'s "Cornell startup/
+`hardware_kicad/HARDWARE_COST_ALTERNATIVES.md`'s "Cornell startup/
 pitch programs" section instead — this doc is federal SBIR/STTR only).
 
 ## The headline finding: this exact concept is already a proven, funded category
